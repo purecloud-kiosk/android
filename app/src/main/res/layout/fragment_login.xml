@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:background="@color/colorPrimary">
+
+    <ImageView
+        android:id="@+id/flogin_logo"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/interactive_logo"
+        android:scaleType="fitXY"/>
+
+    <LinearLayout
+        android:id="@+id/flogin_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:weightSum="4">
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+        <Button
+            android:id="@+id/flogin_login_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/login_button"
+            android:layout_weight="2"
+            android:background="@android:color/white"
+            android:textColor="@color/colorPrimary"/>
+        <View
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/flogin_user_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/flogin_logo"
+        android:paddingTop="16dp"
+        android:textColor="@android:color/white"
+        android:text="@string/login_username"
+        android:fontFamily="sans-serif"/>
+
+    <EditText
+        android:id="@+id/flogin_user_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/flogin_user_text"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:theme="@style/EditTextTheme"
+        android:textColor="@android:color/white"
+        android:freezesText="true"
+        android:inputType="textEmailAddress"/>
+
+    <TextView
+        android:id="@+id/flogin_password_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/flogin_user_edit"
+        android:paddingTop="16dp"
+        android:textColor="@android:color/white"
+        android:text="@string/login_password"
+        android:fontFamily="sans-serif"/>
+
+    <EditText
+        android:id="@+id/flogin_password_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/flogin_password_text"
+        android:textColor="@android:color/white"
+        android:theme="@style/EditTextTheme"
+        android:inputType="textPassword"/>
+
+    <TextView
+        android:id="@+id/flogin_error_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/flogin_password_edit"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/errorTextColor" />
+
+</RelativeLayout>

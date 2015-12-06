@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">PureCloudKiosk</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Login</string>
+    <string name="login_successful">Login Successful</string>
+    <string name="login_error_invalid">Invalid Username Or Password</string>
+    <string name="login_error_missing_username">You Must Specify A Username Before Logging In</string>
+    <string name="login_error_missing_password">You Must Specify A Password Before Logging In</string>
+    <string name="login_error_missing_fields">You Must Specify A Username And Password Before Logging In</string>
+    <string name="login_error_server_timeout">Unable To Login Into PureCloud Servers, Try Again Later</string>
+</resources>
