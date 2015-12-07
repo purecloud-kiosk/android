@@ -103,9 +103,8 @@
                 android:textSize="12sp"
                 android:fontFamily="sans-serif"
                 android:textColor="@color/errorTextColor"
-                android:text = "Errrir"
-                android:layout_below="@id/flogin_password_edit"/>
-
+                android:layout_below="@id/flogin_password_edit"
+                android:freezesText="true"/>
         </RelativeLayout>
     </RelativeLayout>
 

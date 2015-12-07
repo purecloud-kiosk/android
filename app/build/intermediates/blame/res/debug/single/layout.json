@@ -132,6 +132,10 @@
         "source": "C:\\Users\\Reese\\AndroidStudioProjects\\PureCloudKiosk\\app\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.1.1\\res\\layout\\abc_dialog_title_material.xml"
     },
     {
+        "merged": "C:\\Users\\Reese\\AndroidStudioProjects\\PureCloudKiosk\\app\\build\\intermediates\\res\\merged\\debug\\layout\\event_cardview.xml",
+        "source": "C:\\Users\\Reese\\AndroidStudioProjects\\PureCloudKiosk\\app\\src\\main\\res\\layout\\event_cardview.xml"
+    },
+    {
         "merged": "C:\\Users\\Reese\\AndroidStudioProjects\\PureCloudKiosk\\app\\build\\intermediates\\res\\merged\\debug\\layout\\preference_dialog_edittext.xml",
         "source": "C:\\Users\\Reese\\AndroidStudioProjects\\PureCloudKiosk\\app\\build\\intermediates\\exploded-aar\\com.android.support\\preference-v7\\23.1.0\\res\\layout\\preference_dialog_edittext.xml"
     },
