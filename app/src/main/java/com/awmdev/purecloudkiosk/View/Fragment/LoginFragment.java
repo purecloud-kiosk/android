@@ -1,5 +1,8 @@
 package com.awmdev.purecloudkiosk.View.Fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -13,12 +16,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.awmdev.purecloudkiosk.Presenter.LoginPresenter;
-import com.awmdev.purecloudkiosk.Presenter.LoginPresenterInterface;
 import com.awmdev.purecloudkiosk.R;
 
 public class LoginFragment extends Fragment implements View.OnClickListener
 {
-    private LoginPresenterInterface loginPresenter;
+    private LoginPresenter loginPresenter;
     private EditText userEditText;
     private EditText passwordEditText;
     private TextView errorText;
@@ -58,6 +60,18 @@ public class LoginFragment extends Fragment implements View.OnClickListener
     public void removeErrorText()
     {
         errorText.setText(null);
+    }
+
+    public void saveAuthorizationToken(String authToken)
+    {
+        //Grab an instance of the shared preference library
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("authorization_preference",Context.MODE_PRIVATE);
+        //grab an instance of the editor
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        //save the string to the shared preferences
+        editor.putString("authToken",authToken);
+        //apply the change
+        editor.apply();
     }
 
     @Override

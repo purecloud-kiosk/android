@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.Activity.MainActivity">
+    tools:context=".View.Activity.LoginActivity">
 
-    <FrameLayout
+    <fragment
         android:id = "@+id/main_container"
+        android:name="com.awmdev.purecloudkiosk.View.Fragment.LoginFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

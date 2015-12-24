@@ -9,4 +9,5 @@
     <string name="login_error_missing_password">You Must Specify A Password Before Logging In</string>
     <string name="login_error_missing_fields">You Must Specify A Username And Password Before Logging In</string>
     <string name="login_error_server_timeout">Unable To Login Into PureCloud Servers, Try Again Later</string>
+    <string name="auth_token"></string>
 </resources>
