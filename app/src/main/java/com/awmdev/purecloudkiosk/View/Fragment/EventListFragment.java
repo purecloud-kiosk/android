@@ -11,12 +11,15 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.awmdev.purecloudkiosk.Adapter.EventAdapter;
+import com.awmdev.purecloudkiosk.Decorator.RecyclerListSeparator;
+import com.awmdev.purecloudkiosk.Decorator.VerticalSpacingDecorator;
 import com.awmdev.purecloudkiosk.Presenter.EventListPresenter;
 import com.awmdev.purecloudkiosk.R;
 
 public class EventListFragment extends Fragment
 {
     private EventListPresenter eventListPresenter;
+    private EventAdapter eventAdapter;
     private RecyclerView recyclerView;
 
     @Override
@@ -37,8 +40,11 @@ public class EventListFragment extends Fragment
         recyclerView = (RecyclerView)layout.findViewById(R.id.feventlist_recycler_view);
         //assign the layout to the recycler
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        //assign the decorator to the recycler
+        recyclerView.addItemDecoration(new VerticalSpacingDecorator(2));
+        recyclerView.addItemDecoration(new RecyclerListSeparator(getContext()));
         //create the event adapter
-        EventAdapter eventAdapter = new EventAdapter();
+        eventAdapter = new EventAdapter();
         //grab an instance of the shared preferences and grab the auth token
         String authToken = getActivity().getSharedPreferences("authorization_preference", Context.MODE_PRIVATE).getString("authToken", "");
         //call the presenter to get the event data

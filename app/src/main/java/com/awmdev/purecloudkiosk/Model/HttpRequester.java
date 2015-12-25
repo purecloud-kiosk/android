@@ -64,6 +64,6 @@ public class HttpRequester
 
     public void sendAmazonBucketRequest(String url, Response.Listener<String> callback, Response.ErrorListener errorCallback)
     {
-        
+
     }
 }
