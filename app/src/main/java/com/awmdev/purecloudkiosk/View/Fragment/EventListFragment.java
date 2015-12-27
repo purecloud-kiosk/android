@@ -42,7 +42,7 @@ public class EventListFragment extends Fragment
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //assign the decorator to the recycler
         recyclerView.addItemDecoration(new VerticalSpacingDecorator(2));
-        recyclerView.addItemDecoration(new RecyclerListSeparator(getContext()));
+        recyclerView.addItemDecoration(new RecyclerListSeparator(getContext(),R.drawable.recycler_list_divider));
         //create the event adapter
         eventAdapter = new EventAdapter();
         //grab an instance of the shared preferences and grab the auth token

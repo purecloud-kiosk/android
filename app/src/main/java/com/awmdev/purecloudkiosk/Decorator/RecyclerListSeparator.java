@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -19,6 +20,11 @@ public class RecyclerListSeparator extends RecyclerView.ItemDecoration
         TypedArray styledAttributes = context.obtainStyledAttributes(new int[]{android.R.attr.listDivider});
         divider = styledAttributes.getDrawable(0);
         styledAttributes.recycle();
+    }
+
+    public RecyclerListSeparator(Context context, int resID)
+    {
+        divider = ContextCompat.getDrawable(context,resID);
     }
 
     @Override
