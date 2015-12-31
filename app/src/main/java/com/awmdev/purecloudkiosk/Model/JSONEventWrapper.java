@@ -1,13 +1,21 @@
 package com.awmdev.purecloudkiosk.Model;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/*
+    Wrapper Class to handle the storing of images associate with JSON Event Data. This class also
+    overrides the default implementation of getString to handle errors and pass back null due to the
+    amount of calls to get string there are.
+ */
+
 public class JSONEventWrapper extends JSONObject
 {
-    private Image eventImage;
+    private Drawable eventDrawable;
 
     public JSONEventWrapper(JSONObject jsonObject) throws JSONException
     {
@@ -28,13 +36,14 @@ public class JSONEventWrapper extends JSONObject
         }
     }
 
-    public void setEventImage(Image image)
+    public void setEventDrawable(Drawable drawable)
     {
-        eventImage = image;
+        eventDrawable = drawable;
     }
 
-    public Image getEventImage()
+    public Drawable getEventDrawable()
     {
-        return eventImage;
+        return eventDrawable;
     }
+
 }

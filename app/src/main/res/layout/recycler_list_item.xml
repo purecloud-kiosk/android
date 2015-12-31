@@ -55,7 +55,6 @@
         android:gravity="right">
         <ImageView
             android:id="@+id/rli_event_image"
-            android:src="@drawable/interactive_logo"
             android:layout_width="64dp"
             android:layout_height="64dp" />
     </LinearLayout>

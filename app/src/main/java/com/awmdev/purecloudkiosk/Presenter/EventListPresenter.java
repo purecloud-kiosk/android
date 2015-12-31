@@ -67,7 +67,7 @@ public class EventListPresenter
             }
         };
         //create an instance of http requester.
-        HttpRequester httpRequester = HttpRequester.getInstance(eventListFragment.getActivity().getApplicationContext());
+        HttpRequester httpRequester = HttpRequester.getInstance(null);
         //make a volley request for the event data
         httpRequester.sendEventDataRequest(authToken,callback,errorCallback);
     }

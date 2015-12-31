@@ -1,5 +1,8 @@
 package com.awmdev.purecloudkiosk.Adapter;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.ImageLoader;
+
+import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.Model.JSONEventWrapper;
 import com.awmdev.purecloudkiosk.R;
 
@@ -53,6 +59,26 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     }
 
     @Override
+    public void onViewRecycled(ViewHolder holder)
+    {
+        //Grab the json event wrapper that is associated with the view
+        JSONEventWrapper jsonEventWrapper = JSONEventWrapperList.get(holder.getAdapterPosition());
+        //check to see if image has been saved
+        if(jsonEventWrapper.getEventDrawable() == null)
+        {
+            //grab the associated image from the view holder and save it into the wrapper
+            jsonEventWrapper.setEventDrawable(holder.getImageViewDrawable());
+        }
+        //clear the image from the imageview
+        holder.clearImageDrawable();
+    }
+
+    @Override
+    public boolean onFailedToRecycleView(ViewHolder holder) {
+        return true;
+    }
+
+    @Override
     public int getItemCount()
     {
         //return the size of the dataset
@@ -89,11 +115,38 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             eventTitleTextView.setText(jsonEventWrapper.getString("title"));
             eventDescriptionTextView.setText(jsonEventWrapper.getString("description"));
             eventDateTextView.setText(jsonEventWrapper.getString("date"));
+            //string to store image url
+            String imageURL;
             //check to see if the image is null
+            if(jsonEventWrapper.getEventDrawable() != null)
+            {
+                //image not null, grab image from wrapper
+                eventImageView.setImageDrawable(jsonEventWrapper.getEventDrawable());
+            }
+            else
+            {
+                //image not stored, check to see if event has image associated
+                if(!(imageURL = jsonEventWrapper.getString("image_url")).equalsIgnoreCase("null"))
+                {
+                    //grab image from url
+                    HttpRequester.getInstance(null).sendAmazonBucketRequest(imageURL,eventImageView,eventImageView.getMaxWidth(),eventImageView.getMaxHeight());
+                }
+                else
+                {
+                    //place default image instead
+                    HttpRequester.getInstance(null).sendAmazonBucketRequest("https://www.google.com/logos/doodles/2015/new-years-eve-2015-5985438795825152-hp.gif",eventImageView,eventImageView.getMaxWidth(),eventImageView.getMaxHeight());
+                }
+            }
+        }
 
-            //not null image, set the image in the view
-            System.out.println(jsonEventWrapper.getString("image_url"));
-            //download image as it is null, then set it in the wrapper and apply it
+        public Drawable getImageViewDrawable()
+        {
+            return eventImageView.getDrawable();
+        }
+
+        public void clearImageDrawable()
+        {
+            eventImageView.setImageDrawable(null);
         }
 
         @Override
