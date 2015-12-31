@@ -58,7 +58,7 @@ public class LoginPresenter
     public void sendHttpLoginRequest(String email,String password)
     {
         //Create an instance of the httprequester
-        HttpRequester httpRequester = new HttpRequester(loginFragment.getContext());
+        HttpRequester httpRequester = HttpRequester.getInstance(loginFragment.getActivity().getApplicationContext());
         //Create a callback for the json response
         Response.Listener<JSONObject>  callback = new Response.Listener<JSONObject>() {
             @Override

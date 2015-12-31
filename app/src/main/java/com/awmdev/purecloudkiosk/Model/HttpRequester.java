@@ -1,11 +1,13 @@
 package com.awmdev.purecloudkiosk.Model;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -23,10 +25,16 @@ import java.util.Map;
 public class HttpRequester
 {
     private RequestQueue requestQueue;
+    private static HttpRequester httpRequester;
 
-    public HttpRequester(Context context)
+    private HttpRequester(Context context)
     {
-       requestQueue = Volley.newRequestQueue(context);
+        requestQueue = Volley.newRequestQueue(context);
+    }
+
+    public static synchronized HttpRequester getInstance(Context context)
+    {
+        return httpRequester == null ? httpRequester = new HttpRequester(context) : httpRequester;
     }
 
     public void sendHttpLoginRequest(String email,String password, Response.Listener<JSONObject> callback,Response.ErrorListener errorCallback)
@@ -62,8 +70,8 @@ public class HttpRequester
         requestQueue.add(postRequest);
     }
 
-    public void sendAmazonBucketRequest(String url, Response.Listener<String> callback, Response.ErrorListener errorCallback)
+    public void sendAmazonBucketRequest(String url, Response.Listener<Bitmap> callback, Response.ErrorListener errorCallback)
     {
-
+        //ImageRequest imageRequest = new ImageRequest(url,callback,errorCallback)
     }
 }

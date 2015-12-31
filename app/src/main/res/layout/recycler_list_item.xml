@@ -44,6 +44,7 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:textSize="14sp"
+            android:paddingTop="8dp"
             android:text="Sept 7, 2015 @ 1530"/>
 
     </LinearLayout>

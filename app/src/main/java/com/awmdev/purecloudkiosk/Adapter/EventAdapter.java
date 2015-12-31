@@ -92,7 +92,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             //check to see if the image is null
 
             //not null image, set the image in the view
-
+            System.out.println(jsonEventWrapper.getString("image_url"));
             //download image as it is null, then set it in the wrapper and apply it
         }
 
