@@ -20,6 +20,8 @@ import java.util.List;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 {
     private List<JSONEventWrapper> JSONEventWrapperList = new ArrayList();
+    private List<Integer> eventWrapperFilter = new ArrayList();
+    private boolean filtered = false;
 
     public void appendDataSet(Collection<JSONEventWrapper> eventDataCollection)
     {
@@ -29,12 +31,40 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         notifyDataSetChanged();
     }
 
-    public void clearDataSet()
+    public void applyFilterToDataSet(List<Integer> filter)
     {
-        //clear the dataset from the list
-        JSONEventWrapperList.clear();
-        //notify of a dataset change
-        notifyDataSetChanged();
+        synchronized (this)
+        {
+            //if there is already a filter, remove it
+            if (!eventWrapperFilter.isEmpty())
+                eventWrapperFilter.clear();
+            //add the new filter to the dataset
+            eventWrapperFilter.addAll(filter);
+            //set the filter boolean to true since the data now contains a filter
+            filtered = true;
+            //notify the adapter of the dataset changed
+            notifyDataSetChanged();
+        }
+    }
+
+    public void removeFilter()
+    {
+        synchronized (this)
+        {
+            if(filtered)
+            {
+                //clear the dataset filter
+                eventWrapperFilter.clear();
+                filtered = false;
+                //notify the dataset changed
+                notifyDataSetChanged();
+            }
+        }
+    }
+
+    public List<JSONEventWrapper> getEventAdapterDataSet()
+    {
+        return JSONEventWrapperList;
     }
 
     @Override
@@ -51,19 +81,19 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
-        holder.assignEventData(JSONEventWrapperList.get(position));
-    }
-
-    @Override
-    public boolean onFailedToRecycleView(ViewHolder holder)
-    {
-        return true;
+        if(filtered)
+            holder.assignEventData(JSONEventWrapperList.get(eventWrapperFilter.get(position)));
+        else
+            holder.assignEventData(JSONEventWrapperList.get(position));
     }
 
     @Override
     public int getItemCount()
     {
-        return JSONEventWrapperList.size();
+        if(filtered)
+            return eventWrapperFilter.size();
+        else
+            return JSONEventWrapperList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener

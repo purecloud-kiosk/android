@@ -1,5 +1,6 @@
 package com.awmdev.purecloudkiosk.Presenter;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.android.volley.Response;
@@ -7,6 +8,7 @@ import com.android.volley.VolleyError;
 import com.awmdev.purecloudkiosk.Adapter.EventAdapter;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.Model.JSONEventWrapper;
+import com.awmdev.purecloudkiosk.Service.EventSearchAsyncTask;
 import com.awmdev.purecloudkiosk.View.Fragment.EventListFragment;
 
 import org.json.JSONArray;
@@ -18,6 +20,7 @@ import java.util.List;
 public class EventListPresenter
 {
     private String tag = EventListPresenter.class.getSimpleName();
+    private EventSearchAsyncTask eventSearchAsyncTask;
     private EventListFragment eventListFragment;
     private boolean loading = true;
     private int previousTotal = 0;
@@ -26,6 +29,7 @@ public class EventListPresenter
     public EventListPresenter(EventListFragment eventListFragment)
     {
         this.eventListFragment = eventListFragment;
+        this.eventSearchAsyncTask = new EventSearchAsyncTask(eventListFragment);
     }
 
     public void getEventListData(String authToken)
@@ -98,6 +102,30 @@ public class EventListPresenter
                 getEventListData(authToken);
             }
         }
+    }
+
+    public void onSearchTextEntered(String searchPattern)
+    {
+        //if there is already a task running, kill it!
+        if(eventSearchAsyncTask.getStatus() == AsyncTask.Status.RUNNING)
+        {
+            //cancel the task
+            eventSearchAsyncTask.cancel(true);
+        }
+        //check to see if the pattern is greater than zero,if so execute task
+        if(searchPattern.length() > 0)
+        {
+            //create an instance of the async task
+            eventSearchAsyncTask = new EventSearchAsyncTask(eventListFragment);
+            //start the task
+            eventSearchAsyncTask.execute(searchPattern);
+        }
+        else
+        {
+            //remove the filter since there no longer any text in the search box
+            eventListFragment.removeFilterFromEventAdapter();
+        }
+        
     }
 
 }

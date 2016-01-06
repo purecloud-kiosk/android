@@ -37,25 +37,6 @@ public class EventListActivity extends AppCompatActivity
         setSupportActionBar(activityToolbar);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu)
-    {
-        // Inflate the menu
-        getMenuInflater().inflate(R.menu.event_list_menu, menu);
-        //grab the action item from the menu
-        final MenuItem menuItem = menu.findItem(R.id.menu_action_search);
-        //add the item on click listener
-        menuItem.getActionView().setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                menu.performIdentifierAction(menuItem.getItemId(),0);
-            }
-        });
-        //call the super class
-        return super.onCreateOptionsMenu(menu);
-    }
 
     public void onEventItemSelected(String eventID)
     {
