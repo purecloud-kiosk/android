@@ -15,23 +15,20 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-I know the presenter layer is not suppose to have any android specific code called in it but i have no
-other way of creating an instance of volley without it. I may need to find a work around or I could possible
-pass the context but that would also violate the above principle. Brian if you have any ideas please let me know,
-thanks.
- */
 public class EventListPresenter
 {
+    private String tag = EventListPresenter.class.getSimpleName();
     private EventListFragment eventListFragment;
-    private String tag = EventListPresenter.class.getName();
+    private boolean loading = true;
+    private int previousTotal = 0;
+    private int pageNumber = 0;
 
     public EventListPresenter(EventListFragment eventListFragment)
     {
         this.eventListFragment = eventListFragment;
     }
 
-    public void getEventListData(final EventAdapter eventAdapter, String authToken, int pageNumber)
+    public void getEventListData(String authToken)
     {
         //create the callback for the json response
         Response.Listener<JSONArray> callback = new Response.Listener<JSONArray>()
@@ -39,22 +36,28 @@ public class EventListPresenter
             @Override
             public void onResponse(JSONArray response)
             {
-                //create a collection to store the parsed json data
-                List<JSONEventWrapper> jsonEventWrapperList = new ArrayList<>();
-                //parse the json response into jsoneventwrapper class
-                for(int i = 0; i < response.length(); ++i)
+                //check to see if there was a response, array size of zero means no more data
+                if(response.length() > 0)
                 {
-                    try
+                    //create a collection to store the parsed json data
+                    List<JSONEventWrapper> jsonEventWrapperList = new ArrayList<>();
+                    //parse the json response into jsoneventwrapper class
+                    for (int i = 0; i < response.length(); ++i)
                     {
-                        jsonEventWrapperList.add(new JSONEventWrapper(response.getJSONObject(i).getJSONObject("event")));
+                        try
+                        {
+                            jsonEventWrapperList.add(new JSONEventWrapper(response.getJSONObject(i).getJSONObject("event")));
+                        }
+                        catch (JSONException e)
+                        {
+                            Log.d(tag, "Improperly formatted json, exception follows: " + e);
+                        }
                     }
-                    catch (JSONException e)
-                    {
-                        Log.d(tag, "Improperly formatted json, exception follows: " + e);
-                    }
+                    //pass the data to the event adapter
+                    eventListFragment.appendDataToEventAdapter(jsonEventWrapperList);
+                    //increment the page number
+                    pageNumber++;
                 }
-                //pass the data to the event adapter
-                eventAdapter.appendDataSet(jsonEventWrapperList);
             }
         };
         //create the callback for the error response
@@ -69,8 +72,32 @@ public class EventListPresenter
         //create an instance of http requester.
         HttpRequester httpRequester = HttpRequester.getInstance(null);
         //make a volley request for the event data
-        httpRequester.sendEventDataRequest(authToken,callback,errorCallback);
+        httpRequester.sendEventDataRequest(authToken,callback,errorCallback,Integer.toString(pageNumber));
     }
 
+
+    public void onScrolled(int visibleItemCount,int totalItemCount,int firstVisibleItem, int visibleThreshold,String authToken)
+    {
+        if(loading)
+        {
+            if(totalItemCount > previousTotal)
+            {
+                loading = false;
+                previousTotal = totalItemCount;
+            }
+        }
+
+        if(!loading)
+        {
+            //check to see if your within the specified distance from the end of the list
+            if((totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold))
+            {
+                //set loading to true since your the specified distance from the end of the list
+                loading = true;
+                //call getEventListData to retrieve more data
+                getEventListData(authToken);
+            }
+        }
+    }
 
 }

@@ -2,13 +2,28 @@ package com.awmdev.purecloudkiosk.View.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.ActionBarOverlayLayout;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.awmdev.purecloudkiosk.R;
 
 public class EventListActivity extends AppCompatActivity
 {
+    private Toolbar activityToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -16,6 +31,30 @@ public class EventListActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         //Set the content view which contains the frame for the fragments
         setContentView(R.layout.activity_event_list);
+        //grab the toolbar from the view
+        activityToolbar = (Toolbar) findViewById(R.id.activity_event_list_toolbar);
+        //assign the toolbar to the activity
+        setSupportActionBar(activityToolbar);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu)
+    {
+        // Inflate the menu
+        getMenuInflater().inflate(R.menu.event_list_menu, menu);
+        //grab the action item from the menu
+        final MenuItem menuItem = menu.findItem(R.id.menu_action_search);
+        //add the item on click listener
+        menuItem.getActionView().setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                menu.performIdentifierAction(menuItem.getItemId(),0);
+            }
+        });
+        //call the super class
+        return super.onCreateOptionsMenu(menu);
     }
 
     public void onEventItemSelected(String eventID)

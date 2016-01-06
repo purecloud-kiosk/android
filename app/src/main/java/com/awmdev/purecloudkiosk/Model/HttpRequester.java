@@ -12,27 +12,20 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-
-/**
- * Created by Reese on 12/21/2015.
- */
 
 /*
     Known Issues:
         -Singleton Class should be changed to create and grab instance instead of only grabbing instance and pass a null context.
-        -Grab Images from an amazon bucket doesn't have an error image nor does it a default image for volley
         -malformed url throw exceptions, not sure to verify with apache or have them verified server side?
-    Notes:
-        -Volley LRU cache is set small to help with the loading of duplicate images, not to be used to store all of the images
-        for the events. Those are stored in the JSONEventWrapper, so duplicate calls to volley are not required to load an image
-        for an event again. This keeps images associated with the event and not associated with volley.
  */
 
 public class HttpRequester
@@ -48,7 +41,7 @@ public class HttpRequester
         //create the image loader
         imageLoader = new ImageLoader(requestQueue,new ImageLoader.ImageCache()
         {
-            private final LruCache<String, Bitmap> cache = new LruCache<>(5);
+            private final LruCache<String, Bitmap> cache = new LruCache<>(30);
 
             @Override
             public Bitmap getBitmap(String url)
@@ -76,7 +69,7 @@ public class HttpRequester
         //Create a map for the json request
         Map<String,String> jsonMap = new HashMap<>();
         jsonMap.put("email",email);
-        jsonMap.put("password",password);
+        jsonMap.put("password", password);
         JSONObject jsonObject = new JSONObject(jsonMap);
         //Request a json response from the provided url
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, url,jsonObject,callback,errorCallback);
@@ -84,12 +77,12 @@ public class HttpRequester
         requestQueue.add(jsonRequest);
     }
 
-    public void sendEventDataRequest(final String authKey, Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback)
+    public void sendEventDataRequest(final String authKey, Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback,String pageNumber)
     {
         //URL for the request
-        String url = "http://charlie-duong.com:8000/events/managing";
+        String url = String.format("http://charlie-duong.com:8000/events/managing?limit=25&page=%1$s",pageNumber);
         //add the auth token to the header
-        JsonArrayRequest postRequest = new JsonArrayRequest(Request.Method.GET,url,callback,errorCallback)
+        JsonArrayRequest getRequest = new JsonArrayRequest(Request.Method.GET,url,callback,errorCallback)
         {
             @Override
             public Map<String,String> getHeaders() throws AuthFailureError
@@ -99,11 +92,11 @@ public class HttpRequester
                 return authHeader;
             }
         };
-        requestQueue.add(postRequest);
+        requestQueue.add(getRequest);
     }
 
-    public void sendAmazonBucketRequest(final String url, ImageView imageView,int maxWidth, int maxHeight)
+    public ImageLoader getImageLoader()
     {
-        imageLoader.get(url, ImageLoader.getImageListener(imageView, 0, 0), maxWidth, maxHeight);
+        return imageLoader;
     }
 }
