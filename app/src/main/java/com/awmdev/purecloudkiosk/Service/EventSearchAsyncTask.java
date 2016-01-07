@@ -28,7 +28,7 @@ public class EventSearchAsyncTask extends AsyncTask <String,Void,List<Integer>>
         //List to hold all of the matched events
         List<Integer> matches = new ArrayList();
         //Pattern that were searching for
-        String pattern = patterns[0];
+        String pattern = patterns[0].toLowerCase();
         //length of the pattern
         int n = pattern.length();
         //map of all of the bad character shifts for the pattern
@@ -39,7 +39,7 @@ public class EventSearchAsyncTask extends AsyncTask <String,Void,List<Integer>>
         for(JSONEventWrapper wrapper: searchableList)
         {
             //grab the event name from the list
-            String text = wrapper.getString("title");
+            String text = wrapper.getString("title").toLowerCase();
             //length of the text
             int m = text.length();
             //search the text for the pattern

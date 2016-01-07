@@ -125,7 +125,7 @@ public class EventListPresenter
             //remove the filter since there no longer any text in the search box
             eventListFragment.removeFilterFromEventAdapter();
         }
-        
+
     }
 
 }
