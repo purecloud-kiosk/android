@@ -73,7 +73,7 @@ public class EventSearchAsyncTask extends AsyncTask <String,Void,List<Integer>>
                     {
                         if (indexInPattern == 0)
                         {
-                            //super inefficient, will fix with later
+                            //super inefficient, will fix later
                             matches.add(searchableList.indexOf(wrapper));
                             break searchingLoop;
                         }

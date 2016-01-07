@@ -13,8 +13,11 @@ import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.Model.JSONEventWrapper;
 import com.awmdev.purecloudkiosk.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
@@ -55,6 +58,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             {
                 //clear the dataset filter
                 eventWrapperFilter.clear();
+                //set filter to false
                 filtered = false;
                 //notify the dataset changed
                 notifyDataSetChanged();
@@ -125,7 +129,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             //assign the data from the json object
             eventTitleTextView.setText(jsonEventWrapper.getString("title"));
             eventDescriptionTextView.setText(jsonEventWrapper.getString("description"));
-            eventDateTextView.setText(jsonEventWrapper.getString("date"));
+            //grab the time since the epoch from the event
+            Long epoch = Long.parseLong(jsonEventWrapper.getString("date"));
+            //Create a date instance from the epoch
+            Date date = new Date(epoch);
+            //format and set the date
+            eventDateTextView.setText(new SimpleDateFormat("HH:mm:ss 'on' MM-dd-yyyy").format(date));
             //string to store image url
             String imageURL;
             //check to see if event has image associated
