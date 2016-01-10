@@ -1,13 +1,13 @@
-package com.awmdev.purecloudkiosk.Model;
+package com.awmdev.purecloudkiosk.Decorator;
 
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class JSONEventWrapper extends JSONObject
+public class JSONEventDecorator extends JSONObject
 {
-    public JSONEventWrapper(JSONObject jsonObject) throws JSONException
+    public JSONEventDecorator(JSONObject jsonObject) throws JSONException
     {
         super(jsonObject.toString());
     }

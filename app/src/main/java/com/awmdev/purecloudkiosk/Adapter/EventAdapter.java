@@ -9,66 +9,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
-import com.awmdev.purecloudkiosk.Model.JSONEventWrapper;
+import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
 import com.awmdev.purecloudkiosk.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 {
-    private List<JSONEventWrapper> JSONEventWrapperList = new ArrayList();
-    private List<Integer> eventWrapperFilter = new ArrayList();
-    private boolean filtered = false;
+    private EventListModel eventListModel;
 
-    public void appendDataSet(Collection<JSONEventWrapper> eventDataCollection)
+    public EventAdapter(EventListModel eventListModel)
     {
-        //assign the passed in dataset to the list
-        JSONEventWrapperList.addAll(eventDataCollection);
-        //notify the adapter of the dataset change
-        notifyDataSetChanged();
-    }
-
-    public void applyFilterToDataSet(List<Integer> filter)
-    {
-        synchronized (this)
-        {
-            //if there is already a filter, remove it
-            if (!eventWrapperFilter.isEmpty())
-                eventWrapperFilter.clear();
-            //add the new filter to the dataset
-            eventWrapperFilter.addAll(filter);
-            //set the filter boolean to true since the data now contains a filter
-            filtered = true;
-            //notify the adapter of the dataset changed
-            notifyDataSetChanged();
-        }
-    }
-
-    public void removeFilter()
-    {
-        synchronized (this)
-        {
-            if(filtered)
-            {
-                //clear the dataset filter
-                eventWrapperFilter.clear();
-                //set filter to false
-                filtered = false;
-                //notify the dataset changed
-                notifyDataSetChanged();
-            }
-        }
-    }
-
-    public List<JSONEventWrapper> getEventAdapterDataSet()
-    {
-        return JSONEventWrapperList;
+        this.eventListModel = eventListModel;
     }
 
     @Override
@@ -85,19 +43,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
-        if(filtered)
-            holder.assignEventData(JSONEventWrapperList.get(eventWrapperFilter.get(position)));
-        else
-            holder.assignEventData(JSONEventWrapperList.get(position));
+        holder.assignEventData(eventListModel.getEventListItem(position));
     }
 
     @Override
     public int getItemCount()
     {
-        if(filtered)
-            return eventWrapperFilter.size();
-        else
-            return JSONEventWrapperList.size();
+        return eventListModel.getEventListDataSize();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
@@ -124,13 +76,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             eventImageView = (NetworkImageView)layout.findViewById(R.id.rli_event_image);
         }
 
-        public void assignEventData(JSONEventWrapper jsonEventWrapper)
+        public void assignEventData(JSONEventDecorator jsonEventDecorator)
         {
             //assign the data from the json object
-            eventTitleTextView.setText(jsonEventWrapper.getString("title"));
-            eventDescriptionTextView.setText(jsonEventWrapper.getString("description"));
+            eventTitleTextView.setText(jsonEventDecorator.getString("title"));
+            eventDescriptionTextView.setText(jsonEventDecorator.getString("description"));
             //grab the time since the epoch from the event
-            Long epoch = Long.parseLong(jsonEventWrapper.getString("date"));
+            Long epoch = Long.parseLong(jsonEventDecorator.getString("date"));
             //Create a date instance from the epoch
             Date date = new Date(epoch);
             //format and set the date
@@ -138,14 +90,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             //string to store image url
             String imageURL;
             //check to see if event has image associated
-            if(!(imageURL = jsonEventWrapper.getString("image_url")).equalsIgnoreCase("null"))
+            if(!(imageURL = jsonEventDecorator.getString("image_url")).equalsIgnoreCase("null"))
             {
                 //grab image from url
                 eventImageView.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());
             }
             else
             {
-                //place default image instead
+                //place default image instead, this is not the final image nor will it be an http request
                eventImageView.setImageUrl("https://www.google.com/logos/doodles/2015/new-years-eve-2015-5985438795825152-hp.gif",HttpRequester.getInstance(null).getImageLoader());
             }
 

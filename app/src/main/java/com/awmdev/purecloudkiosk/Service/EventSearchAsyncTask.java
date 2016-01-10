@@ -2,7 +2,8 @@ package com.awmdev.purecloudkiosk.Service;
 
 import android.os.AsyncTask;
 
-import com.awmdev.purecloudkiosk.Model.JSONEventWrapper;
+import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
+import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.View.Fragment.EventListFragment;
 
 import java.util.ArrayList;
@@ -16,10 +17,12 @@ import java.util.Map;
 public class EventSearchAsyncTask extends AsyncTask <String,Void,List<Integer>>
 {
     private EventListFragment eventListFragment;
+    private EventListModel eventListModel;
 
-    public EventSearchAsyncTask(EventListFragment eventListFragment)
+    public EventSearchAsyncTask(EventListFragment eventListFragment,EventListModel eventListModel)
     {
         this.eventListFragment = eventListFragment;
+        this.eventListModel = eventListModel;
     }
 
     @Override
@@ -34,9 +37,9 @@ public class EventSearchAsyncTask extends AsyncTask <String,Void,List<Integer>>
         //map of all of the bad character shifts for the pattern
         Map<Character, Integer> rightMostIndexes = preprocessForBadCharacterShift(pattern);
         //grab the list that were going to search through
-        List<JSONEventWrapper> searchableList = eventListFragment.getEventAdapterDataSet();
+        List<JSONEventDecorator> searchableList = eventListModel.getEventListDataSet();
         //outer loop to handle iterating through the event
-        for(JSONEventWrapper wrapper: searchableList)
+        for(JSONEventDecorator wrapper: searchableList)
         {
             //grab the event name from the list
             String text = wrapper.getString("title").toLowerCase();
@@ -44,7 +47,7 @@ public class EventSearchAsyncTask extends AsyncTask <String,Void,List<Integer>>
             int m = text.length();
             //search the text for the pattern
             int alignedAt = 0;
-            //loop to handle the searching of the text, actually boyermoore algorithm
+            //loop to handle the searching of the text, actual boyermoore algorithm
             searchingLoop:
             while (alignedAt + (n - 1) < m)
             {
@@ -87,7 +90,10 @@ public class EventSearchAsyncTask extends AsyncTask <String,Void,List<Integer>>
     @Override
     protected void onPostExecute(List<Integer> filteredEvents)
     {
-        eventListFragment.applyFilterToEventAdapter(filteredEvents);
+        //apply the filter to the model
+        eventListModel.applyFilterToDataSet(filteredEvents);
+        //notify the adapter of the dataset change
+        eventListFragment.notifyEventAdapterOfDataSetChange();
     }
 
     private Map<Character, Integer> preprocessForBadCharacterShift(String pattern)

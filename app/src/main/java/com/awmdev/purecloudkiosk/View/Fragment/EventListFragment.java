@@ -1,11 +1,8 @@
 package com.awmdev.purecloudkiosk.View.Fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -17,14 +14,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.awmdev.purecloudkiosk.Adapter.EventAdapter;
 import com.awmdev.purecloudkiosk.Decorator.RecyclerListSeparator;
 import com.awmdev.purecloudkiosk.Decorator.VerticalSpacingDecorator;
-import com.awmdev.purecloudkiosk.Model.JSONEventWrapper;
+import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
+import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Presenter.EventListPresenter;
 import com.awmdev.purecloudkiosk.R;
 
@@ -33,6 +30,7 @@ import java.util.List;
 public class EventListFragment extends Fragment
 {
     private EventListPresenter eventListPresenter;
+    private EventListModel eventListModel;
     private EventAdapter eventAdapter;
     private RecyclerView recyclerView;
     private String authToken;
@@ -42,8 +40,10 @@ public class EventListFragment extends Fragment
     {
         //Call the super class
         super.onCreate(savedInstanceState);
+        //create the model
+        eventListModel = new EventListModel();
         //Create the presenter
-        eventListPresenter = new EventListPresenter(this);
+        eventListPresenter = new EventListPresenter(this,eventListModel);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class EventListFragment extends Fragment
         //add the scroll listener to the recycler view
         recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((LinearLayoutManager)recyclerView.getLayoutManager(),5));
         //create the event adapter
-        eventAdapter = new EventAdapter();
+        eventAdapter = new EventAdapter(eventListModel);
         //grab an instance of the shared preferences and grab the auth token
         authToken = getActivity().getSharedPreferences("authorization_preference", Context.MODE_PRIVATE).getString("authToken", "");
         //call the presenter to get the event data
@@ -74,6 +74,11 @@ public class EventListFragment extends Fragment
         return layout;
     }
 
+    public void notifyEventAdapterOfDataSetChange()
+    {
+        eventAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater)
     {
@@ -82,9 +87,11 @@ public class EventListFragment extends Fragment
         //grab the action item from the menu
         final MenuItem menuItem = menu.findItem(R.id.menu_action_search);
         //add the item on click listener
-        menuItem.getActionView().setOnClickListener(new View.OnClickListener() {
+        menuItem.getActionView().setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 menu.performIdentifierAction(menuItem.getItemId(), 0);
             }
         });
@@ -97,25 +104,7 @@ public class EventListFragment extends Fragment
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    public void applyFilterToEventAdapter(List<Integer> filteredItems)
-    {
-        eventAdapter.applyFilterToDataSet(filteredItems);
-    }
 
-    public void removeFilterFromEventAdapter()
-    {
-        eventAdapter.removeFilter();
-    }
-
-    public List<JSONEventWrapper> getEventAdapterDataSet()
-    {
-        return eventAdapter.getEventAdapterDataSet();
-    }
-
-    public void appendDataToEventAdapter(List<JSONEventWrapper> jsonEventWrapperList)
-    {
-        eventAdapter.appendDataSet(jsonEventWrapperList);
-    }
 
     public class SearchTextWatcher implements TextWatcher
     {

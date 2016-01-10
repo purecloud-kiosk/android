@@ -5,9 +5,9 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.awmdev.purecloudkiosk.Adapter.EventAdapter;
+import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
-import com.awmdev.purecloudkiosk.Model.JSONEventWrapper;
+import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
 import com.awmdev.purecloudkiosk.Service.EventSearchAsyncTask;
 import com.awmdev.purecloudkiosk.View.Fragment.EventListFragment;
 
@@ -22,14 +22,15 @@ public class EventListPresenter
     private String tag = EventListPresenter.class.getSimpleName();
     private EventSearchAsyncTask eventSearchAsyncTask;
     private EventListFragment eventListFragment;
+    private EventListModel eventListModel;
     private boolean loading = true;
     private int previousTotal = 0;
     private int pageNumber = 0;
 
-    public EventListPresenter(EventListFragment eventListFragment)
+    public EventListPresenter(EventListFragment eventListFragment, EventListModel eventListModel)
     {
         this.eventListFragment = eventListFragment;
-        this.eventSearchAsyncTask = new EventSearchAsyncTask(eventListFragment);
+        this.eventListModel = eventListModel;
     }
 
     public void getEventListData(String authToken)
@@ -44,13 +45,13 @@ public class EventListPresenter
                 if(response.length() > 0)
                 {
                     //create a collection to store the parsed json data
-                    List<JSONEventWrapper> jsonEventWrapperList = new ArrayList<>();
+                    List<JSONEventDecorator> jsonEventDecoratorList = new ArrayList<>();
                     //parse the json response into jsoneventwrapper class
                     for (int i = 0; i < response.length(); ++i)
                     {
                         try
                         {
-                            jsonEventWrapperList.add(new JSONEventWrapper(response.getJSONObject(i).getJSONObject("event")));
+                            jsonEventDecoratorList.add(new JSONEventDecorator(response.getJSONObject(i).getJSONObject("event")));
                         }
                         catch (JSONException e)
                         {
@@ -58,7 +59,9 @@ public class EventListPresenter
                         }
                     }
                     //pass the data to the event adapter
-                    eventListFragment.appendDataToEventAdapter(jsonEventWrapperList);
+                    eventListModel.appendDataSet(jsonEventDecoratorList);
+                    //notify the adapter of the dataset change
+                    eventListFragment.notifyEventAdapterOfDataSetChange();
                     //increment the page number
                     pageNumber++;
                 }
@@ -107,23 +110,26 @@ public class EventListPresenter
     public void onSearchTextEntered(String searchPattern)
     {
         //if there is already a task running, kill it!
-        if(eventSearchAsyncTask.getStatus() == AsyncTask.Status.RUNNING)
+        if(eventSearchAsyncTask != null && eventSearchAsyncTask.getStatus() == AsyncTask.Status.RUNNING)
         {
             //cancel the task
             eventSearchAsyncTask.cancel(true);
         }
+
         //check to see if the pattern is greater than zero,if so execute task
         if(searchPattern.length() > 0)
         {
             //create an instance of the async task
-            eventSearchAsyncTask = new EventSearchAsyncTask(eventListFragment);
+            eventSearchAsyncTask = new EventSearchAsyncTask(eventListFragment,eventListModel);
             //start the task
             eventSearchAsyncTask.execute(searchPattern);
         }
         else
         {
             //remove the filter since there no longer any text in the search box
-            eventListFragment.removeFilterFromEventAdapter();
+            eventListModel.removeFilterFromDataSet();
+            //notify the adapter of the dataset change
+            eventListFragment.notifyEventAdapterOfDataSetChange();
         }
 
     }
