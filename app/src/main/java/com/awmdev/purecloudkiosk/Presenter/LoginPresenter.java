@@ -2,27 +2,18 @@ package com.awmdev.purecloudkiosk.Presenter;
 
 import android.text.TextUtils;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.Volley;
+
+import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.R;
+import com.awmdev.purecloudkiosk.View.Activity.LoginActivity;
 import com.awmdev.purecloudkiosk.View.Fragment.LoginFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Created by Reese on 11/23/2015.
- */
-public class LoginPresenter implements LoginPresenterInterface
+public class LoginPresenter
 {
     private LoginFragment loginFragment;
 
@@ -31,13 +22,6 @@ public class LoginPresenter implements LoginPresenterInterface
         this.loginFragment = loginFragment;
     }
 
-    @Override
-    public void validatingUserField(String username)
-    {
-
-    }
-
-    @Override
     public void validateCredentials(String username, String password)
     {
         //check to see if the username/password fields contain data
@@ -71,27 +55,21 @@ public class LoginPresenter implements LoginPresenterInterface
         }
     }
 
-    @Override
     public void sendHttpLoginRequest(String email,String password)
     {
-        //Create a request queue for volley and pass the application context
-        RequestQueue queue = Volley.newRequestQueue(loginFragment.getActivity());
-        //URL for the request
-        String url = "http://charlie-duong.com:8000/purecloud/login";
-        //Create a map for the json request
-        Map<String,String> jsonMap = new HashMap<>();
-        jsonMap.put("email",email);
-        jsonMap.put("password",password);
-        JSONObject jsonObject = new JSONObject(jsonMap);
-        //Request a json response from the provided url
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, url,jsonObject, new Response.Listener<JSONObject>() {
+        //Create an instance of the httprequester
+        HttpRequester httpRequester = HttpRequester.getInstance(loginFragment.getActivity().getApplicationContext());
+        //Create a callback for the json response
+        Response.Listener<JSONObject>  callback = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
                 try
                 {
-                    System.out.println(response.getJSONObject("res").get("X-OrgBook-Auth-Key").toString());
-                    loginFragment.setError(R.string.login_successful);
+                    //save the auth token to the shared preferences
+                    loginFragment.saveAuthorizationToken(response.getJSONObject("res").get("X-OrgBook-Auth-Key").toString());
+                    //switch to the next activity
+                    ((LoginActivity)loginFragment.getActivity()).onLoginSuccessful();
                 }
                 catch (JSONException e)
                 {
@@ -99,15 +77,18 @@ public class LoginPresenter implements LoginPresenterInterface
                 }
             }
 
-        },new Response.ErrorListener(){
+        };
+        //Create a callback for the error response
+        Response.ErrorListener errorCallback = new Response.ErrorListener()
+        {
             @Override
             public void onErrorResponse(VolleyError error)
             {
                 loginFragment.setError(R.string.login_error_server_timeout);
             }
-        });
-        //Add the request to the volley queue to be executed
-        queue.add(jsonRequest);
+        };
+        //send the request to volley
+        httpRequester.sendHttpLoginRequest(email,password,callback,errorCallback);
     }
 
 

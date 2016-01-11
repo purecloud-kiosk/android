@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_list_item"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:orientation="horizontal"
+    android:background="@android:color/white"
+    android:paddingTop = "16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="20dp"
+    android:weightSum="100">
+
+    <LinearLayout
+        android:id="@+id/rli_inner_layout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="80"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/rli_event_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="THIS IS AN EVENT TITLE THAT IS SUPER FUCKING LONG"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp"
+            android:ellipsize="end"
+            android:lines="1"/>
+        <TextView
+            android:id="@+id/rli_event_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="THIS IS A DESCRIPTION OF AN EVENT"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:lines="1"/>
+
+        <TextView
+            android:id="@+id/rli_event_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp"
+            android:paddingTop="8dp"
+            android:text="Sept 7, 2015 @ 1530"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="20"
+        android:gravity="right">
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/rli_event_image"
+            android:layout_width="64dp"
+            android:layout_height="64dp" />
+    </LinearLayout>
+
+</LinearLayout>

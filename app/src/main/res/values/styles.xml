@@ -3,6 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:textColorPrimary">@android:color/white</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -13,6 +14,11 @@
         <item name="colorControlNormal">#FFFFFF</item>
         <item name="colorControlActivated">#00e5ff</item>
         <item name="colorControlHighlight">#FFFFFF</item>
+    </style>
+
+    <!-- Theme for the back arrow of the toolbar -->
+    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@android:color/white</item>
     </style>
 
 </resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="100">
+
+    <fragment
+        android:id ="@+id/list_fragment"
+        android:name = "com.awmdev.purecloudkiosk.View.Fragment.EventListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="60" />
+    <fragment
+        android:id="@+id/detailed_fragment"
+        android:name = "com.awmdev.purecloudkiosk.View.Fragment.DetailedEventFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="40"/>
+</LinearLayout>
