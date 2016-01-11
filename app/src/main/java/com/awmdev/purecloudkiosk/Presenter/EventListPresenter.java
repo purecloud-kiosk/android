@@ -1,6 +1,7 @@
 package com.awmdev.purecloudkiosk.Presenter;
 
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.android.volley.Response;
@@ -23,9 +24,6 @@ public class EventListPresenter
     private EventSearchAsyncTask eventSearchAsyncTask;
     private EventListFragment eventListFragment;
     private EventListModel eventListModel;
-    private boolean loading = true;
-    private int previousTotal = 0;
-    private int pageNumber = 0;
 
     public EventListPresenter(EventListFragment eventListFragment, EventListModel eventListModel)
     {
@@ -63,7 +61,8 @@ public class EventListPresenter
                     //notify the adapter of the dataset change
                     eventListFragment.notifyEventAdapterOfDataSetChange();
                     //increment the page number
-                    pageNumber++;
+                    eventListModel.incrementPageNumber();
+                    System.out.println("PageNumber: "+ eventListModel.getPageNumber());
                 }
             }
         };
@@ -79,28 +78,28 @@ public class EventListPresenter
         //create an instance of http requester.
         HttpRequester httpRequester = HttpRequester.getInstance(null);
         //make a volley request for the event data
-        httpRequester.sendEventDataRequest(authToken,callback,errorCallback,Integer.toString(pageNumber));
+        httpRequester.sendEventDataRequest(authToken,callback,errorCallback,Integer.toString(eventListModel.getPageNumber()));
     }
-
 
     public void onScrolled(int visibleItemCount,int totalItemCount,int firstVisibleItem, int visibleThreshold,String authToken)
     {
-        if(loading)
+        if(eventListModel.getLoadingStatus())
         {
-            if(totalItemCount > previousTotal)
+            if(totalItemCount > eventListModel.getPreviousTotal())
             {
-                loading = false;
-                previousTotal = totalItemCount;
+                eventListModel.setLoadingStatus(false);
+                eventListModel.setPreviousTotal(totalItemCount);
             }
         }
 
-        if(!loading)
+        if(!eventListModel.getLoadingStatus())
         {
             //check to see if your within the specified distance from the end of the list
             if((totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold))
             {
+                System.out.println("Requesting more data");
                 //set loading to true since your the specified distance from the end of the list
-                loading = true;
+                eventListModel.setLoadingStatus(true);
                 //call getEventListData to retrieve more data
                 getEventListData(authToken);
             }

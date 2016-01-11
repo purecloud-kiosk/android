@@ -34,7 +34,7 @@ public class RecyclerListSeparator extends RecyclerView.ItemDecoration
         int left = parent.getPaddingLeft();
         int right = parent.getWidth() - parent.getPaddingRight();
         //loop through all of the views in the recycler view
-        for(int i = 0; i < parent.getChildCount(); ++i)
+        for(int i = 0; i < parent.getChildCount()-1; ++i)
         {
             //grab the view from parent
             View view = parent.getChildAt(i);
