@@ -62,7 +62,6 @@ public class EventListPresenter
                     eventListFragment.notifyEventAdapterOfDataSetChange();
                     //increment the page number
                     eventListModel.incrementPageNumber();
-                    System.out.println("PageNumber: "+ eventListModel.getPageNumber());
                 }
             }
         };
@@ -97,7 +96,6 @@ public class EventListPresenter
             //check to see if your within the specified distance from the end of the list
             if((totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold))
             {
-                System.out.println("Requesting more data");
                 //set loading to true since your the specified distance from the end of the list
                 eventListModel.setLoadingStatus(true);
                 //call getEventListData to retrieve more data
