@@ -2,6 +2,7 @@ package com.awmdev.purecloudkiosk.Presenter;
 
 import android.text.TextUtils;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
@@ -10,6 +11,7 @@ import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Activity.LoginActivity;
 import com.awmdev.purecloudkiosk.View.Fragment.LoginFragment;
 
+import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -84,7 +86,11 @@ public class LoginPresenter
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                loginFragment.setError(R.string.login_error_server_timeout);
+                NetworkResponse networkResponse = error.networkResponse;
+                if(networkResponse != null && networkResponse.statusCode == HttpStatus.SC_FORBIDDEN)
+                    loginFragment.setError(R.string.login_error_invalid);
+                else
+                    loginFragment.setError(R.string.login_error_server_timeout);
             }
         };
         //send the request to volley
