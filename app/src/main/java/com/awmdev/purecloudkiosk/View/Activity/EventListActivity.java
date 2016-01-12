@@ -2,6 +2,7 @@ package com.awmdev.purecloudkiosk.View.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -38,7 +39,7 @@ public class EventListActivity extends AppCompatActivity
     }
 
 
-    public void onEventItemSelected(String eventID)
+    public void onEventItemSelected(Parcelable jsonEventParcelable)
     {
         //try and grab the fragment
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.detailed_fragment);
@@ -47,7 +48,7 @@ public class EventListActivity extends AppCompatActivity
         {
             //create the intent for the new activity
             Intent intent = new Intent(getApplicationContext(),DetailedEventActivity.class);
-            intent.putExtra("eventID", eventID);
+            intent.putExtra("event", jsonEventParcelable);
             //start the activity
             startActivity(intent);
         }

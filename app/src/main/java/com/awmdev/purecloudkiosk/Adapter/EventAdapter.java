@@ -13,6 +13,7 @@ import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
 import com.awmdev.purecloudkiosk.R;
+import com.awmdev.purecloudkiosk.View.Activity.EventListActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,10 +23,12 @@ import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 {
+    private EventListActivity eventListActivity;
     private EventListModel eventListModel;
 
-    public EventAdapter(EventListModel eventListModel)
+    public EventAdapter(EventListModel eventListModel, EventListActivity eventListActivity)
     {
+        this.eventListActivity = eventListActivity;
         this.eventListModel = eventListModel;
     }
 
@@ -36,6 +39,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         LinearLayout layout = (LinearLayout)LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_list_item,parent,false);
         //store the inflated view in a view holder
         ViewHolder holder = new ViewHolder(layout);
+        //set the onclick listener for the holder
+        layout.setOnClickListener(holder);
         //return the holder
         return holder;
     }
@@ -52,12 +57,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         return eventListModel.getEventListDataSize();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         private TextView eventTitleTextView;
         private TextView eventDescriptionTextView;
         private TextView eventDateTextView;
         private NetworkImageView eventImageView;
+        private JSONEventDecorator jsonEventDecorator;
 
         public ViewHolder(LinearLayout layout)
         {
@@ -78,6 +84,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 
         public void assignEventData(JSONEventDecorator jsonEventDecorator)
         {
+            //save the jsoneventdecorator for the onclick handling
+            this.jsonEventDecorator = jsonEventDecorator;
             //assign the data from the json object
             eventTitleTextView.setText(jsonEventDecorator.getString("title"));
             eventDescriptionTextView.setText(jsonEventDecorator.getString("description"));
@@ -86,7 +94,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             //Create a date instance from the epoch
             Date date = new Date(epoch);
             //format and set the date
-            eventDateTextView.setText(new SimpleDateFormat("HH:mm:ss 'on' MM-dd-yyyy").format(date));
+            eventDateTextView.setText(new SimpleDateFormat("hh:mm a 'on' MM-dd-yyyy").format(date));
             //string to store image url
             String imageURL;
             //check to see if event has image associated
@@ -106,7 +114,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         @Override
         public void onClick(View v)
         {
-
+            eventListActivity.onEventItemSelected(jsonEventDecorator);
         }
     }
 }

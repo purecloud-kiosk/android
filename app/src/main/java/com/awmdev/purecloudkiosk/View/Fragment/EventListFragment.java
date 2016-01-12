@@ -24,6 +24,7 @@ import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
 import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Presenter.EventListPresenter;
 import com.awmdev.purecloudkiosk.R;
+import com.awmdev.purecloudkiosk.View.Activity.EventListActivity;
 
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class EventListFragment extends Fragment
         //add the scroll listener to the recycler view
         recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((LinearLayoutManager)recyclerView.getLayoutManager(),5));
         //create the event adapter
-        eventAdapter = new EventAdapter(eventListModel);
+        eventAdapter = new EventAdapter(eventListModel,(EventListActivity)getActivity());
         //grab an instance of the shared preferences and grab the auth token
         authToken = getActivity().getSharedPreferences("authorization_preference", Context.MODE_PRIVATE).getString("authToken", "");
         //if the bundle is null, request data from the presenter

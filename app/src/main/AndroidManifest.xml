@@ -20,8 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".View.Activity.EventListActivity">
-
+        <activity
+            android:name=".View.Activity.EventListActivity">
+        </activity>
+        <activity
+            android:name=".View.Activity.DetailedEventActivity">
         </activity>
     </application>
 

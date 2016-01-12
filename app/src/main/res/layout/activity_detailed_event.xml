@@ -5,5 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/activity_detailed_event_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ToolbarTheme"/>
+
+    <fragment
+        android:id="@+id/detailed_event_fragment"
+        android:name="com.awmdev.purecloudkiosk.View.Fragment.DetailedEventFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
