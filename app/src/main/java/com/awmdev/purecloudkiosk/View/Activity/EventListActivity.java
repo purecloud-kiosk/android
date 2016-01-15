@@ -48,7 +48,7 @@ public class EventListActivity extends AppCompatActivity
         {
             //create the intent for the new activity
             Intent intent = new Intent(getApplicationContext(),DetailedEventActivity.class);
-            intent.putExtra("event", jsonEventParcelable);
+            intent.putExtra("parcelable", jsonEventParcelable);
             //start the activity
             startActivity(intent);
         }

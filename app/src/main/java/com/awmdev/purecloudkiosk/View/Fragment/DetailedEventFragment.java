@@ -1,7 +1,6 @@
 package com.awmdev.purecloudkiosk.View.Fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,13 +10,14 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-import com.awmdev.purecloudkiosk.Presenter.DetailedEventListPresenter;
+import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
+import com.awmdev.purecloudkiosk.Presenter.DetailedEventPresenter;
 import com.awmdev.purecloudkiosk.R;
 
 public class DetailedEventFragment extends Fragment
 {
     //variables to store all of the views in the fragment
-    private DetailedEventListPresenter detailedEventListPresenter;
+    private DetailedEventPresenter detailedEventPresenter;
     private NetworkImageView eventImage;
     private TextView eventOrganization;
     private TextView eventDescription;
@@ -25,8 +25,13 @@ public class DetailedEventFragment extends Fragment
     private TextView eventPrivacy;
     private TextView eventName;
     private TextView eventDate;
-    //enum to store the selection for the textviews
-    public enum textViewSelection  {EVENT_NAME,ORGANIZATION,PRIVACY,LOCATION,DATE,DESCRIPTION};
+    //int to store the selection for the textviews
+    public static final int EVENT_NAME = 0;
+    public static final int DATE = EVENT_NAME + 1;
+    public static final int DESCRIPTION = DATE + 1;
+    public static final int LOCATION = DESCRIPTION + 1;
+    public static final int ORGANIZATION = LOCATION + 1;
+    public static final int PRIVACY = ORGANIZATION + 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -34,7 +39,7 @@ public class DetailedEventFragment extends Fragment
         //call the super class
         super.onCreate(savedInstanceState);
         //create the presenter
-        detailedEventListPresenter = new DetailedEventListPresenter();
+        detailedEventPresenter = new DetailedEventPresenter(this);
     }
 
     @Override
@@ -56,11 +61,18 @@ public class DetailedEventFragment extends Fragment
         eventDescription = (TextView)scrollView.findViewById(R.id.fdevent_description);
         //grab the network image view banner
         eventImage = (NetworkImageView)scrollView.findViewById(R.id.fdevent_imageview);
+        //populate the view with the passed bundle
+        detailedEventPresenter.populateView(getDecoratorFromIntent());
         //return the inflated view
         return scrollView;
     }
 
-    public void assignTextView(textViewSelection selection, String textSelection)
+    private JSONEventDecorator getDecoratorFromIntent()
+    {
+        return (JSONEventDecorator) getActivity().getIntent().getExtras().getParcelable("parcelable");
+    }
+
+    public void assignTextView(int selection, String textSelection)
     {
         //temp variable to store the selected textview into
         TextView textView = null;
@@ -90,7 +102,7 @@ public class DetailedEventFragment extends Fragment
         textView.setText(textSelection);
     }
 
-    public void assignImageToImageView(String url,ImageLoader imageLoader)
+    public void setImageUrl(String url,ImageLoader imageLoader)
     {
         eventImage.setImageUrl(url,imageLoader);
     }
