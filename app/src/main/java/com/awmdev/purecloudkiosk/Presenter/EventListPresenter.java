@@ -1,7 +1,5 @@
 package com.awmdev.purecloudkiosk.Presenter;
 
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.android.volley.Response;
@@ -9,7 +7,6 @@ import com.android.volley.VolleyError;
 import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
-import com.awmdev.purecloudkiosk.Service.EventSearchAsyncTask;
 import com.awmdev.purecloudkiosk.View.Fragment.EventListFragment;
 
 import org.json.JSONArray;
@@ -21,7 +18,6 @@ import java.util.List;
 public class EventListPresenter
 {
     private String tag = EventListPresenter.class.getSimpleName();
-    private EventSearchAsyncTask eventSearchAsyncTask;
     private EventListFragment eventListFragment;
     private EventListModel eventListModel;
 
@@ -31,7 +27,7 @@ public class EventListPresenter
         this.eventListModel = eventListModel;
     }
 
-    public void getEventListData(String authToken)
+    public void getEventListData()
     {
         //create the callback for the json response
         Response.Listener<JSONArray> callback = new Response.Listener<JSONArray>()
@@ -42,6 +38,8 @@ public class EventListPresenter
                 //check to see if there was a response, array size of zero means no more data
                 if(response.length() > 0)
                 {
+                    //remove the no event splash image just in case it exists
+                    eventListFragment.setEmptyStateViewVisibility(false);
                     //create a collection to store the parsed json data
                     List<JSONEventDecorator> jsonEventDecoratorList = new ArrayList<>();
                     //parse the json response into jsoneventwrapper class
@@ -63,6 +61,12 @@ public class EventListPresenter
                     //increment the page number
                     eventListModel.incrementPageNumber();
                 }
+                else
+                {
+                    //check to see if the state is empty and produce the required view
+                    if(eventListModel.getEventListDataSize() == 0)
+                        eventListFragment.setEmptyStateViewVisibility(true);
+                }
             }
         };
         //create the callback for the error response
@@ -77,10 +81,10 @@ public class EventListPresenter
         //create an instance of http requester.
         HttpRequester httpRequester = HttpRequester.getInstance(null);
         //make a volley request for the event data
-        httpRequester.sendEventDataRequest(authToken,callback,errorCallback,Integer.toString(eventListModel.getPageNumber()));
+        httpRequester.sendEventDataRequest(eventListModel.getAuthenticationToken(),callback,errorCallback,Integer.toString(eventListModel.getPageNumber()));
     }
 
-    public void onScrolled(int visibleItemCount,int totalItemCount,int firstVisibleItem, int visibleThreshold,String authToken)
+    public void onScrolled(int visibleItemCount,int totalItemCount,int firstVisibleItem, int visibleThreshold)
     {
         if(eventListModel.getLoadingStatus())
         {
@@ -98,37 +102,108 @@ public class EventListPresenter
             {
                 //set loading to true since your the specified distance from the end of the list
                 eventListModel.setLoadingStatus(true);
-                //call getEventListData to retrieve more data
-                getEventListData(authToken);
+                //check to see if the data is filtered and call the appropriate function
+                if(eventListModel.isFiltered())
+                    sendSearchRequest(eventListModel.getCurrentSearchPattern(), Integer.toString(eventListModel.getPageNumber()), false);
+                else
+                    getEventListData();
             }
         }
     }
 
-    public void onSearchTextEntered(String searchPattern)
+    private void resetScrollAdapter()
     {
-        //if there is already a task running, kill it!
-        if(eventSearchAsyncTask != null && eventSearchAsyncTask.getStatus() == AsyncTask.Status.RUNNING)
-        {
-            //cancel the task
-            eventSearchAsyncTask.cancel(true);
-        }
+        //reset the previous total to zero
+        eventListModel.setPreviousTotal(0);
+        //set the loading status to true so the scroll adapter will reset its self
+        eventListModel.setLoadingStatus(true);
+    }
 
-        //check to see if the pattern is greater than zero,if so execute task
+    public void onSearchTextChanged(String searchPattern)
+    {
         if(searchPattern.length() > 0)
         {
-            //create an instance of the async task
-            eventSearchAsyncTask = new EventSearchAsyncTask(eventListFragment,eventListModel);
-            //start the task
-            eventSearchAsyncTask.execute(searchPattern);
+            //save the search pattern to the model
+            eventListModel.setCurrentSearchPattern(searchPattern);
+            //reset the scroll adapter
+            resetScrollAdapter();
+            //send the request
+            sendSearchRequest(searchPattern, "0", true);
         }
         else
         {
-            //remove the filter since there no longer any text in the search box
+            //remove the filtered data set from the model
             eventListModel.removeFilterFromDataSet();
-            //notify the adapter of the dataset change
+            //reset the scroll adapter
+            resetScrollAdapter();
+            //notify the adapter of the data set change
             eventListFragment.notifyEventAdapterOfDataSetChange();
         }
-
     }
 
+    private void sendSearchRequest(String searchPattern, String pageNumber,final boolean firstSearch)
+    {
+        //create the callback for the json response
+        Response.Listener<JSONArray> callback = new Response.Listener<JSONArray>()
+        {
+            @Override
+            public void onResponse(JSONArray response)
+            {
+                //check to see if there was a response, array size of zero means no data was sent
+                if (response.length() > 0)
+                {
+                    //remove the splash image if it exists
+                    eventListFragment.setEmptyStateViewVisibility(false);
+                    //create a collection to store the parsed json data
+                    List<JSONEventDecorator> jsonEventDecoratorList = new ArrayList<>();
+                    //parse the json response into jsoneventwrapper class
+                    for (int i = 0; i < response.length(); ++i)
+                    {
+                        try
+                        {
+                            jsonEventDecoratorList.add(new JSONEventDecorator(response.getJSONObject(i).getJSONObject("event")));
+                        }
+                        catch (JSONException e)
+                        {
+                            Log.d(tag, "Improperly formatted json, exception follows: " + e);
+                        }
+                    }
+                    //check to see if this is the first search or subsequent search
+                    if(firstSearch)
+                        eventListModel.applyFilterToDataSet(jsonEventDecoratorList);
+                    else
+                        eventListModel.appendFilterToDataSet(jsonEventDecoratorList);
+                    //notify the adapter of the dataset change
+                    eventListFragment.notifyEventAdapterOfDataSetChange();
+                    //increment the page number
+                    eventListModel.incrementPageNumber();
+                }
+                else
+                {
+                    //if this is the first search performed and there is no data then clear the old
+                    //data from the filtered data set while keeping the flag set to true
+                    if(firstSearch)
+                        eventListModel.clearFilterDataSet();
+                    //notify the adapter of the change in data set
+                    eventListFragment.notifyEventAdapterOfDataSetChange();
+                    //check to see if the state is empty and produce the required view
+                    if(eventListModel.getEventListDataSize() == 0)
+                        eventListFragment.setEmptyStateViewVisibility(true);
+                }
+            }
+        };
+        //create the callback for the error response
+        Response.ErrorListener errorCallback = new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d(tag, "Unable to reach server, volley error follow: " + error);
+            }
+        };
+        //create an instance of http requester.
+        HttpRequester httpRequester = HttpRequester.getInstance(null);
+        //make a volley request for the event data
+        httpRequester.sendEventDataSearchRequest(eventListModel.getAuthenticationToken(), callback, errorCallback, pageNumber, searchPattern);
+    }
 }

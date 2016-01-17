@@ -12,11 +12,26 @@ import java.util.List;
 public class EventListModel implements Parcelable
 {
     private List<JSONEventDecorator> jsonEventDecoratorList = new ArrayList();
-    private List<Integer> eventDecoratorFilter = new ArrayList();
+    private List<JSONEventDecorator> eventDecoratorFilter = new ArrayList();
+    private int firstVisibleNonFilteredItemLocation;
+    private int firstVisibleFilteredItemLocation;
+    private String currentSearchPattern;
+    private String authenticationToken;
     private boolean filtered = false;
+    private int filterPageNumber = 0;
     private boolean loading = true;
     private int previousTotal = 0;
     private int pageNumber = 0;
+
+    public void setAuthenticationToken(String authenticationToken)
+    {
+        this.authenticationToken = authenticationToken;
+    }
+
+    public String getAuthenticationToken()
+    {
+        return authenticationToken;
+    }
 
     public void appendDataSet(Collection<JSONEventDecorator> eventDataCollection)
     {
@@ -24,20 +39,20 @@ public class EventListModel implements Parcelable
         jsonEventDecoratorList.addAll(eventDataCollection);
     }
 
-    public List<JSONEventDecorator> getEventListDataSet()
+    public synchronized List<JSONEventDecorator> getEventListDataSet()
     {
         return jsonEventDecoratorList;
     }
 
-    public JSONEventDecorator getEventListItem(int position)
+    public synchronized JSONEventDecorator getEventListItem(int position)
     {
         if(filtered)
-            return jsonEventDecoratorList.get(eventDecoratorFilter.get(position));
+            return eventDecoratorFilter.get(position);
         else
             return jsonEventDecoratorList.get(position);
     }
 
-    public int getEventListDataSize()
+    public synchronized int getEventListDataSize()
     {
         if(filtered)
             return eventDecoratorFilter.size();
@@ -45,42 +60,96 @@ public class EventListModel implements Parcelable
             return jsonEventDecoratorList.size();
     }
 
-    public void removeFilterFromDataSet()
+
+    /** This function will remove the data set associated
+     *  with the filter and reset the filter flag to false.
+     *  This will switch the data set the recycler view uses back
+     *  to the event list data set.
+     */
+    public synchronized void removeFilterFromDataSet()
     {
-        synchronized (this)
+        if(filtered)
         {
-            if(filtered)
-            {
-                //clear the dataset filter
-                eventDecoratorFilter.clear();
-                //set filter to false
-                filtered = false;
-            }
+            //clear the dataset filter
+            eventDecoratorFilter.clear();
+            //set filter to false
+            filtered = false;
+            //reset the filter page number to zero
+            filterPageNumber = 0;
         }
     }
 
-    public void applyFilterToDataSet(List<Integer> filter)
+
+    /** This function wil clear the data set from the filter without
+     * removing the filtered flag from the model.
+     */
+    public synchronized  void clearFilterDataSet()
     {
-        synchronized (this)
-        {
-            //if there is already a filter, remove it
-            if (!eventDecoratorFilter.isEmpty())
-                eventDecoratorFilter.clear();
+        //clear the filter data set but keep filter true
+        eventDecoratorFilter.clear();
+    }
+
+    /**
+     *  This function will append another data set to the filter. This should be used
+     *  in cases when onScrolled is called. Never use this when appended the initial
+     *  data set since filtered will not be set to true.
+     *
+     * @param filter the data set that should be appended to the filter
+     */
+    public synchronized void appendFilterToDataSet(List<JSONEventDecorator> filter)
+    {
             //add the new filter to the dataset
             eventDecoratorFilter.addAll(filter);
-            //set the filter boolean to true since the data now contains a filter
-            filtered = true;
-        }
     }
+
+    /**
+     *   Use this function to append the initial data set to the filter. This method
+     *   will also set filtered to true and update the data for the recycler view.
+     *   You must call notifyEventAdapterOfDataSetChange for the changes to be updated.
+     *   Do not call this method to append additional data such as when onScrolled is
+     *   called.
+     *
+     *   @param filter the initial data set that should be appended to the filter
+     */
+    public synchronized void applyFilterToDataSet(List<JSONEventDecorator> filter)
+    {
+        //remove the old data from the set
+        eventDecoratorFilter.clear();
+        //set the new data set to the filter
+        eventDecoratorFilter.addAll(filter);
+        //reset the page number to zero
+        filterPageNumber = 0;
+        //set the filtered status to true since the data set now contains a filter
+        filtered = true;
+    }
+
+    public synchronized boolean isFiltered()
+    {
+        return filtered;
+    }
+
+    public void setCurrentSearchPattern(String searchPattern)
+    {
+        this.currentSearchPattern = searchPattern;
+    }
+
+    public String getCurrentSearchPattern()
+    {
+        return currentSearchPattern;
+    }
+
 
     public int getPageNumber()
     {
-        return pageNumber;
+        return filtered ? filterPageNumber : pageNumber;
     }
 
     public void incrementPageNumber()
     {
-        pageNumber++;
+        if(filtered)
+            filterPageNumber++;
+        else
+            pageNumber++;
     }
 
     public int getPreviousTotal()
@@ -103,17 +172,31 @@ public class EventListModel implements Parcelable
         return loading;
     }
 
+    public void setFirstVisibleFilteredItemLocation(int location)
+    {
+        firstVisibleFilteredItemLocation = location;
+    }
+
+    public void setFirstVisibleNonFilteredItemLocation(int location)
+    {
+        firstVisibleNonFilteredItemLocation = location;
+    }
+
+    public int getFirstVisibleItemLocation()
+    {
+        return filtered ? firstVisibleFilteredItemLocation : firstVisibleNonFilteredItemLocation;
+    }
+
     /*
         All Code Beyond this point is used for saving the model to the bundle for screen
         rotation handling. I'm hoping this doesn't break the mvp pattern by allowing android
         dependencies into the model :(
      */
 
-    protected void initializeModel(int pageNumber, int previousTotal, boolean loading)
+    private void initializeModel(int pageNumber, int filterPageNumber)
     {
         this.pageNumber = pageNumber;
-        this.previousTotal = previousTotal;
-        this.loading = loading;
+        this.filterPageNumber = filterPageNumber;
     }
 
     @Override
@@ -126,14 +209,14 @@ public class EventListModel implements Parcelable
     public void writeToParcel(Parcel dest, int flags)
     {
         //write the filtered and loading status to the parcel
-        dest.writeBooleanArray(new boolean[]{filtered,loading});
+        dest.writeBooleanArray(new boolean[]{filtered});
         //write the filtered list to the parcel, if the list is filtered
         if(filtered)
             dest.writeList(eventDecoratorFilter);
         //write the jsondecoratorlist to the parcel
         dest.writeTypedList(jsonEventDecoratorList);
         //write the previous total and pagenumber to the parcel
-        dest.writeIntArray(new int[]{pageNumber,previousTotal});
+        dest.writeIntArray(new int[]{pageNumber,filterPageNumber});
     }
 
     public static final Parcelable.Creator<EventListModel> CREATOR = new Parcelable.Creator()
@@ -147,7 +230,7 @@ public class EventListModel implements Parcelable
             //create a list for the parcel to store temporary list items into
             List parcelList = new ArrayList<>();
             //create a boolean array to grab the values from
-            boolean booleanArray[] = new boolean[2];
+            boolean booleanArray[] = new boolean[1];
             //read the boolean array from the parcel
             source.readBooleanArray(booleanArray);
             //grab the value from the array
@@ -156,7 +239,7 @@ public class EventListModel implements Parcelable
             int integerArray[] = new int[2];
             source.readIntArray(integerArray);
             //load the values from the array and set them to the model
-            eventListModel.initializeModel(integerArray[0],integerArray[1],booleanArray[1]);
+            eventListModel.initializeModel(integerArray[0],integerArray[1]);
             //check to see if the list is filtered, if so load the filtered list
             if(filtered)
             {

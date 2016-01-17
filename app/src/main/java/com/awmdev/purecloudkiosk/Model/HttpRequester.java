@@ -3,7 +3,6 @@ package com.awmdev.purecloudkiosk.Model;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.LruCache;
-import android.widget.ImageView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -12,13 +11,11 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,13 +27,16 @@ import java.util.Map;
 
 public class HttpRequester
 {
+    private RequestQueue singleThreadedRequestQueue;
+    private static HttpRequester httpRequester;
+    private Request currentSearchRequest;
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;
-    private static HttpRequester httpRequester;
+
 
     private HttpRequester(Context context)
     {
-        //create the request queue
+        //create the default request queue for all request but searching
         requestQueue = Volley.newRequestQueue(context);
         //create the image loader
         imageLoader = new ImageLoader(requestQueue,new ImageLoader.ImageCache()
@@ -81,6 +81,27 @@ public class HttpRequester
     {
         //URL for the request
         String url = String.format("http://charlie-duong.com:8000/events/managing?limit=25&page=%1$s",pageNumber);
+        //create the request
+        Request request = createJsonArrayRequest(url, authKey, callback, errorCallback);
+        //send the request
+        requestQueue.add(request);
+    }
+
+    public void sendEventDataSearchRequest(final String authKey,Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback,String pageNumber, String searchRequest)
+    {
+        //construct the url
+        String url = String.format("http://charlie-duong.com:8000/events/searchManagedEvents?limit=25&page=%1$s&q=%2$s",pageNumber,searchRequest);
+        //cancel the current request, if it exists
+        if(currentSearchRequest != null)
+            requestQueue.cancelAll(currentSearchRequest);
+        //create the request
+        currentSearchRequest = createJsonArrayRequest(url, authKey, callback, errorCallback);
+        //send the new request
+        requestQueue.add(currentSearchRequest);
+    }
+
+    private Request createJsonArrayRequest(final String url, final String authKey, Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback)
+    {
         //add the auth token to the header
         JsonArrayRequest getRequest = new JsonArrayRequest(Request.Method.GET,url,callback,errorCallback)
         {
@@ -92,7 +113,7 @@ public class HttpRequester
                 return authHeader;
             }
         };
-        requestQueue.add(getRequest);
+        return getRequest;
     }
 
     public ImageLoader getImageLoader()

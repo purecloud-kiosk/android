@@ -14,29 +14,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.awmdev.purecloudkiosk.Adapter.EventAdapter;
 import com.awmdev.purecloudkiosk.Decorator.RecyclerListSeparator;
 import com.awmdev.purecloudkiosk.Decorator.VerticalSpacingDecorator;
-import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
 import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Presenter.EventListPresenter;
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Activity.EventListActivity;
 
-import java.util.List;
-
 public class EventListFragment extends Fragment
 {
     private EventListPresenter eventListPresenter;
+    private ImageView emptyStateImageView;
     private EventListModel eventListModel;
     private EventAdapter eventAdapter;
     private RecyclerView recyclerView;
     private Bundle savedInstanceState;
     private Menu fragmentMenu;
-    private String authToken;
 
 
     @Override
@@ -48,7 +46,12 @@ public class EventListFragment extends Fragment
         if(savedInstanceState != null)
             eventListModel = (EventListModel)savedInstanceState.getParcelable("parcelable");
         else
+        {
+            //create a new instance of the model
             eventListModel = new EventListModel();
+            //grab the authentication token from the activity and set it
+            eventListModel.setAuthenticationToken(getActivity().getSharedPreferences("authorization_preference", Context.MODE_PRIVATE).getString("authToken", ""));
+        }
         //Create the presenter
         eventListPresenter = new EventListPresenter(this,eventListModel);
         //temporally save the bundle to restore the menu state
@@ -59,9 +62,11 @@ public class EventListFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         //inflate the layout
-        LinearLayout layout = (LinearLayout)inflater.inflate(R.layout.fragment_event_list,container,false);
+        RelativeLayout layout = (RelativeLayout)inflater.inflate(R.layout.fragment_event_list,container,false);
         //grab the recycler view from the layout
         recyclerView = (RecyclerView)layout.findViewById(R.id.feventlist_recycler_view);
+        //grab the image view from the layout
+        emptyStateImageView = (ImageView)layout.findViewById(R.id.feventlist_imageview);
         //assign the layout to the recycler
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //assign the decorator to the recycler
@@ -71,17 +76,38 @@ public class EventListFragment extends Fragment
         recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((LinearLayoutManager)recyclerView.getLayoutManager(),5));
         //create the event adapter
         eventAdapter = new EventAdapter(eventListModel,(EventListActivity)getActivity());
-        //grab an instance of the shared preferences and grab the auth token
-        authToken = getActivity().getSharedPreferences("authorization_preference", Context.MODE_PRIVATE).getString("authToken", "");
         //if the bundle is null, request data from the presenter
         if(savedInstanceState == null)
-            eventListPresenter.getEventListData(authToken);
+            eventListPresenter.getEventListData();
         //add the adapter to the recycler
         recyclerView.setAdapter(eventAdapter);
         //set that the fragment has a options menu
         setHasOptionsMenu(true);
         //return the layout
         return layout;
+    }
+
+    public void notifyEventAdapterOfDataSetChange()
+    {
+        eventAdapter.notifyDataSetChanged();
+    }
+
+    public void setEmptyStateViewVisibility(boolean visible)
+    {
+        if(visible)
+            emptyStateImageView.setVisibility(View.VISIBLE);
+        else
+            emptyStateImageView.setVisibility(View.GONE);
+    }
+
+    public int getAdapterViewPosition()
+    {
+        return ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+    }
+
+    public void setAdapterViewPosition(int position)
+    {
+        ((LinearLayoutManager)recyclerView.getLayoutManager()).scrollToPosition(position);
     }
 
     @Override
@@ -94,16 +120,11 @@ public class EventListFragment extends Fragment
         //grab the searchview from the menu
         MenuItem searchViewMenuItem = fragmentMenu.findItem(R.id.menu_action_search);
         //write the current state of the menu
-        outState.putBoolean("actionMenuExpanded",searchViewMenuItem.isActionViewExpanded());
+        outState.putBoolean("actionMenuExpanded", searchViewMenuItem.isActionViewExpanded());
         //grab the edit text from the search box
         EditText editText = (EditText)searchViewMenuItem.getActionView().findViewById(R.id.search_edit_text);
         //grab the string from the edit text and store it in the bundle
         outState.putString("searchBoxValue", editText.getText().toString());
-    }
-
-    public void notifyEventAdapterOfDataSetChange()
-    {
-        eventAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -166,7 +187,7 @@ public class EventListFragment extends Fragment
         @Override
         public void afterTextChanged(Editable editable)
         {
-            eventListPresenter.onSearchTextEntered(editable.toString());
+            eventListPresenter.onSearchTextChanged(editable.toString());
         }
     }
 
@@ -194,7 +215,7 @@ public class EventListFragment extends Fragment
             //the position of the item in the top of the view
             int firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
             //call the presenter
-            eventListPresenter.onScrolled(visibleItemCount,totalItemCount,firstVisibleItem, visibleThreshold,authToken);
+            eventListPresenter.onScrolled(visibleItemCount,totalItemCount,firstVisibleItem, visibleThreshold);
         }
     }
 }
