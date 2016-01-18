@@ -27,6 +27,12 @@ public class EventListPresenter
         this.eventListModel = eventListModel;
     }
 
+    public void onDestroy()
+    {
+        eventListFragment = null;
+        eventListModel = null;
+    }
+
     public void getEventListData()
     {
         //create the callback for the json response

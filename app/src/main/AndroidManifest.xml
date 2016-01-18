@@ -21,7 +21,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".View.Activity.EventListActivity">
+            android:name=".View.Activity.EventListActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan">
         </activity>
         <activity
             android:name=".View.Activity.DetailedEventActivity">

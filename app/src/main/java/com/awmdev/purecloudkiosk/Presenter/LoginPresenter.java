@@ -68,10 +68,10 @@ public class LoginPresenter
             {
                 try
                 {
-                    //save the auth token to the shared preferences
-                    loginFragment.saveAuthorizationToken(response.getJSONObject("res").get("X-OrgBook-Auth-Key").toString());
+                    //grab the authentication token from the response
+                    String authenticationToken = response.getJSONObject("res").get("X-OrgBook-Auth-Key").toString();
                     //switch to the next activity
-                    ((LoginActivity)loginFragment.getActivity()).onLoginSuccessful();
+                    ((LoginActivity)loginFragment.getActivity()).onLoginSuccessful(authenticationToken);
                 }
                 catch (JSONException e)
                 {

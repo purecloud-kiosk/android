@@ -50,7 +50,7 @@ public class EventListFragment extends Fragment
             //create a new instance of the model
             eventListModel = new EventListModel();
             //grab the authentication token from the activity and set it
-            eventListModel.setAuthenticationToken(getActivity().getSharedPreferences("authorization_preference", Context.MODE_PRIVATE).getString("authToken", ""));
+            eventListModel.setAuthenticationToken(getActivity().getIntent().getExtras().getString("authenticationToken"));
         }
         //Create the presenter
         eventListPresenter = new EventListPresenter(this,eventListModel);
@@ -87,29 +87,6 @@ public class EventListFragment extends Fragment
         return layout;
     }
 
-    public void notifyEventAdapterOfDataSetChange()
-    {
-        eventAdapter.notifyDataSetChanged();
-    }
-
-    public void setEmptyStateViewVisibility(boolean visible)
-    {
-        if(visible)
-            emptyStateImageView.setVisibility(View.VISIBLE);
-        else
-            emptyStateImageView.setVisibility(View.GONE);
-    }
-
-    public int getAdapterViewPosition()
-    {
-        return ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-    }
-
-    public void setAdapterViewPosition(int position)
-    {
-        ((LinearLayoutManager)recyclerView.getLayoutManager()).scrollToPosition(position);
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
@@ -125,6 +102,18 @@ public class EventListFragment extends Fragment
         EditText editText = (EditText)searchViewMenuItem.getActionView().findViewById(R.id.search_edit_text);
         //grab the string from the edit text and store it in the bundle
         outState.putString("searchBoxValue", editText.getText().toString());
+        //save the state of the splash icon
+        outState.putBoolean("splashState",emptyStateImageView.getVisibility() == View.VISIBLE);
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState)
+    {
+        //pass the bundle to the super class
+        super.onViewStateRestored(savedInstanceState);
+        //check to see if the bundle is null, it should never be null
+        if(savedInstanceState != null)
+            setEmptyStateViewVisibility(savedInstanceState.getBoolean("splashState"));
     }
 
     @Override
@@ -137,11 +126,9 @@ public class EventListFragment extends Fragment
         //grab the action item from the menu
         final MenuItem menuItem = menu.findItem(R.id.menu_action_search);
         //add the item on click listener
-        menuItem.getActionView().setOnClickListener(new View.OnClickListener()
-        {
+        menuItem.getActionView().setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 menu.performIdentifierAction(menuItem.getItemId(), 0);
             }
         });
@@ -154,6 +141,15 @@ public class EventListFragment extends Fragment
         editText.addTextChangedListener(new SearchTextWatcher());
         //call the super class
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        //call the super
+        super.onDestroy();
+        //call onDestroy for the presenter
+        eventListPresenter.onDestroy();
     }
 
     private void restoreMenuState()
@@ -173,6 +169,30 @@ public class EventListFragment extends Fragment
             //set the bundle to null to free memory
             savedInstanceState = null;
         }
+    }
+
+    public void notifyEventAdapterOfDataSetChange()
+    {
+        //pass the request to notify the event adapter of a data set change
+        eventAdapter.notifyDataSetChanged();
+    }
+
+    public void setEmptyStateViewVisibility(boolean visible)
+    {
+        if(visible)
+            emptyStateImageView.setVisibility(View.VISIBLE);
+        else
+            emptyStateImageView.setVisibility(View.GONE);
+    }
+
+    public int getAdapterViewPosition()
+    {
+        return ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+    }
+
+    public void setAdapterViewPosition(int position)
+    {
+        ((LinearLayoutManager)recyclerView.getLayoutManager()).scrollToPosition(position);
     }
 
     public class SearchTextWatcher implements TextWatcher

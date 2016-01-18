@@ -17,10 +17,11 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
     }
 
-    public void onLoginSuccessful()
+    public void onLoginSuccessful(String authenticationKey)
     {
         //switch to the next activity
         Intent intent = new Intent(getApplicationContext(),EventListActivity.class);
+        intent.putExtra("authenticationToken",authenticationKey);
         startActivity(intent);
     }
 }

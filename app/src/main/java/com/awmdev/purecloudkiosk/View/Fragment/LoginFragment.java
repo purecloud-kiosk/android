@@ -62,18 +62,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener
         errorText.setText(null);
     }
 
-    public void saveAuthorizationToken(String authToken)
-    {
-        //Grab an instance of the shared preference library
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("authorization_preference",Context.MODE_PRIVATE);
-        //grab an instance of the editor
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        //save the string to the shared preferences
-        editor.putString("authToken",authToken);
-        //apply the change
-        editor.apply();
-    }
-
     @Override
     public void onClick(View v)
     {
