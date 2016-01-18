@@ -68,7 +68,7 @@ public class EventListActivity extends AppCompatActivity
         else
         {
             //send the data to the other fragment
-            ((DetailedEventFragment)(fragment)).assignDataFromActivity(jsonEventParcelable);
+            ((DetailedEventFragment)(fragment)).assignDataToView(jsonEventParcelable);
         }
     }
 

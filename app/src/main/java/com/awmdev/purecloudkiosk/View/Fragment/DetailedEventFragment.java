@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -22,6 +24,8 @@ public class DetailedEventFragment extends Fragment
     private NetworkImageView eventImage;
     private TextView eventOrganization;
     private TextView eventDescription;
+    private LinearLayout linearLayout;
+    private ImageView splahImageView;
     private TextView eventLocation;
     private TextView eventPrivacy;
     private TextView eventName;
@@ -62,18 +66,31 @@ public class DetailedEventFragment extends Fragment
         eventDescription = (TextView)scrollView.findViewById(R.id.fdevent_description);
         //grab the network image view banner
         eventImage = (NetworkImageView)scrollView.findViewById(R.id.fdevent_imageview);
+        //grab the splash view
+        splahImageView = (ImageView)scrollView.findViewById(R.id.fdevent_splash_view);
+        //grab the main layout for event information
+        linearLayout = (LinearLayout)scrollView.findViewById(R.id.fdevent_main_layout);
         //populate the view with the passed bundle
-        JSONEventDecorator jsonEventDecorator;
-        if((jsonEventDecorator = getDecoratorFromIntent()) != null)
-            detailedEventPresenter.populateView(jsonEventDecorator);
+        assignDataToView(getDecoratorFromIntent());
         //return the inflated view
         return scrollView;
     }
 
-    public void assignDataFromActivity(Parcelable jsonEventDecorator)
+    public void assignDataToView(Parcelable jsonEventDecorator)
     {
-        detailedEventPresenter.populateView((JSONEventDecorator)jsonEventDecorator);
+        if(jsonEventDecorator == null)
+        {
+           linearLayout.setVisibility(View.GONE);
+           splahImageView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            linearLayout.setVisibility(View.VISIBLE);
+            splahImageView.setVisibility(View.GONE);
+            detailedEventPresenter.populateView((JSONEventDecorator) jsonEventDecorator);
+        }
     }
+
 
     private JSONEventDecorator getDecoratorFromIntent()
     {
