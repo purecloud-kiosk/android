@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
@@ -10,18 +9,39 @@
     android:paddingBottom="16dp"
     android:background="@color/colorPrimary">
 
-    <ImageView
-        android:id="@+id/flogin_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="70dp"
-        android:src="@drawable/interactive_logo_land"
-        android:scaleType="fitXY"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/flogin_image_wrapper"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="15"/>
+
+        <ImageView
+            android:id="@+id/flogin_logo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="70"
+            android:src="@drawable/interactive_logo_land"
+            android:adjustViewBounds="true"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="15"/>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/flogin_user_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/flogin_logo"
+        android:layout_below="@id/flogin_image_wrapper"
         android:paddingTop="16dp"
         android:textColor="@android:color/white"
         android:text="@string/login_username"
@@ -71,6 +91,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:weightSum="4">
         <View

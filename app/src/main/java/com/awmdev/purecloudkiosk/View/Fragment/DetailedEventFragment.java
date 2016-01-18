@@ -1,6 +1,7 @@
 package com.awmdev.purecloudkiosk.View.Fragment;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,9 +63,16 @@ public class DetailedEventFragment extends Fragment
         //grab the network image view banner
         eventImage = (NetworkImageView)scrollView.findViewById(R.id.fdevent_imageview);
         //populate the view with the passed bundle
-        detailedEventPresenter.populateView(getDecoratorFromIntent());
+        JSONEventDecorator jsonEventDecorator;
+        if((jsonEventDecorator = getDecoratorFromIntent()) != null)
+            detailedEventPresenter.populateView(jsonEventDecorator);
         //return the inflated view
         return scrollView;
+    }
+
+    public void assignDataFromActivity(Parcelable jsonEventDecorator)
+    {
+        detailedEventPresenter.populateView((JSONEventDecorator)jsonEventDecorator);
     }
 
     private JSONEventDecorator getDecoratorFromIntent()

@@ -1,6 +1,9 @@
 package com.awmdev.purecloudkiosk.View.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
@@ -20,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.awmdev.purecloudkiosk.R;
+import com.awmdev.purecloudkiosk.View.Fragment.DetailedEventFragment;
 
 public class EventListActivity extends AppCompatActivity
 {
@@ -30,6 +34,9 @@ public class EventListActivity extends AppCompatActivity
     {
         //call the super class
         super.onCreate(savedInstanceState);
+        //check device size to see if you need request landscape only
+        if(isDeviceXtraLarge(getApplicationContext()))
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         //Set the content view which contains the frame for the fragments
         setContentView(R.layout.activity_event_list);
         //grab the toolbar from the view
@@ -38,6 +45,12 @@ public class EventListActivity extends AppCompatActivity
         setSupportActionBar(activityToolbar);
     }
 
+    private boolean isDeviceXtraLarge(Context context)
+    {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+    }
 
     public void onEventItemSelected(Parcelable jsonEventParcelable)
     {
@@ -55,8 +68,7 @@ public class EventListActivity extends AppCompatActivity
         else
         {
             //send the data to the other fragment
-
-            //TO DO
+            ((DetailedEventFragment)(fragment)).assignDataFromActivity(jsonEventParcelable);
         }
     }
 
