@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -24,9 +24,9 @@ public class DetailedEventFragment extends Fragment
     private NetworkImageView eventImage;
     private TextView eventOrganization;
     private TextView eventDescription;
-    private LinearLayout linearLayout;
     private ImageView splahImageView;
     private TextView eventLocation;
+    private ScrollView scrollView;
     private TextView eventPrivacy;
     private TextView eventName;
     private TextView eventDate;
@@ -51,41 +51,41 @@ public class DetailedEventFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         //inflate the view
-        ScrollView scrollView = (ScrollView)inflater.inflate(R.layout.fragment_detailed_event,container,false);
+        RelativeLayout relativeLayout = (RelativeLayout)inflater.inflate(R.layout.fragment_detailed_event,container,false);
         //grab the components from the view,starting with event name
-        eventName = (TextView)scrollView.findViewById(R.id.fdevent_event_name);
+        eventName = (TextView)relativeLayout.findViewById(R.id.fdevent_event_name);
         //grab the organization textview
-        eventOrganization = (TextView)scrollView.findViewById(R.id.fdevent_organization);
+        eventOrganization = (TextView)relativeLayout.findViewById(R.id.fdevent_organization);
         //grab the privacy textview
-        eventPrivacy = (TextView)scrollView.findViewById(R.id.fdevent_privacy);
+        eventPrivacy = (TextView)relativeLayout.findViewById(R.id.fdevent_privacy);
         //grab the event location textview
-        eventLocation = (TextView)scrollView.findViewById(R.id.fdevent_location);
+        eventLocation = (TextView)relativeLayout.findViewById(R.id.fdevent_location);
         //grab the location textview
-        eventDate = (TextView)scrollView.findViewById(R.id.fdevent_date);
+        eventDate = (TextView)relativeLayout.findViewById(R.id.fdevent_date);
         //grab the description of the event
-        eventDescription = (TextView)scrollView.findViewById(R.id.fdevent_description);
+        eventDescription = (TextView)relativeLayout.findViewById(R.id.fdevent_description);
         //grab the network image view banner
-        eventImage = (NetworkImageView)scrollView.findViewById(R.id.fdevent_imageview);
+        eventImage = (NetworkImageView)relativeLayout.findViewById(R.id.fdevent_imageview);
         //grab the splash view
-        splahImageView = (ImageView)scrollView.findViewById(R.id.fdevent_splash_view);
+        splahImageView = (ImageView)relativeLayout.findViewById(R.id.fdevent_splash_view);
         //grab the main layout for event information
-        linearLayout = (LinearLayout)scrollView.findViewById(R.id.fdevent_main_layout);
+        scrollView = (ScrollView)relativeLayout.findViewById(R.id.fdevent_main_layout);
         //populate the view with the passed bundle
         assignDataToView(getDecoratorFromIntent());
         //return the inflated view
-        return scrollView;
+        return relativeLayout;
     }
 
     public void assignDataToView(Parcelable jsonEventDecorator)
     {
         if(jsonEventDecorator == null)
         {
-           linearLayout.setVisibility(View.GONE);
+           scrollView.setVisibility(View.GONE);
            splahImageView.setVisibility(View.VISIBLE);
         }
         else
         {
-            linearLayout.setVisibility(View.VISIBLE);
+            scrollView.setVisibility(View.VISIBLE);
             splahImageView.setVisibility(View.GONE);
             detailedEventPresenter.populateView((JSONEventDecorator) jsonEventDecorator);
         }
