@@ -65,7 +65,7 @@ public class HttpRequester
     public void sendHttpLoginRequest(String email,String password, Response.Listener<JSONObject> callback,Response.ErrorListener errorCallback)
     {
         //URL for the request
-        String url = "http://charlie-duong.com:8000/purecloud/login";
+        String url = "http://charlie-duong.com:8080/purecloud/login";
         //Create a map for the json request
         Map<String,String> jsonMap = new HashMap<>();
         jsonMap.put("email",email);
@@ -80,7 +80,7 @@ public class HttpRequester
     public void sendEventDataRequest(final String authKey, Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback,String pageNumber)
     {
         //URL for the request
-        String url = String.format("http://charlie-duong.com:8000/events/managing?limit=25&page=%1$s",pageNumber);
+        String url = String.format("http://charlie-duong.com:8080/events/managing?limit=25&page=%1$s",pageNumber);
         //create the request
         Request request = createJsonArrayRequest(url, authKey, callback, errorCallback);
         //send the request
@@ -90,7 +90,7 @@ public class HttpRequester
     public void sendEventDataSearchRequest(final String authKey,Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback,String pageNumber, String searchRequest)
     {
         //construct the url
-        String url = String.format("http://charlie-duong.com:8000/events/searchManagedEvents?limit=25&page=%1$s&q=%2$s",pageNumber,searchRequest);
+        String url = String.format("http://charlie-duong.com:8080/events/searchManagedEvents?limit=25&page=%1$s&q=%2$s",pageNumber,searchRequest);
         //cancel the current request, if it exists
         if(currentSearchRequest != null)
             requestQueue.cancelAll(currentSearchRequest);

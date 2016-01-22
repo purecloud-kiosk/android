@@ -31,7 +31,6 @@ public class DetailedEventPresenter
         else
             detailedEventFragment.assignTextView(detailedEventFragment.PRIVACY,"Public");
         detailedEventFragment.assignTextView(detailedEventFragment.EVENT_NAME,jsonEventDecorator.getString("title"));
-        detailedEventFragment.assignTextView(detailedEventFragment.ORGANIZATION,jsonEventDecorator.getString("organization"));
         detailedEventFragment.assignTextView(detailedEventFragment.LOCATION,jsonEventDecorator.getString("location"));
         //grab the date in the form of the epoch
         Long epoch = Long.parseLong(jsonEventDecorator.getString("date"));

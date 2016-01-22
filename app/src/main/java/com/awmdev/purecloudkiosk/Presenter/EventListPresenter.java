@@ -53,7 +53,7 @@ public class EventListPresenter
                     {
                         try
                         {
-                            jsonEventDecoratorList.add(new JSONEventDecorator(response.getJSONObject(i).getJSONObject("event")));
+                            jsonEventDecoratorList.add(new JSONEventDecorator(response.getJSONObject(i)));
                         }
                         catch (JSONException e)
                         {
@@ -167,7 +167,7 @@ public class EventListPresenter
                     {
                         try
                         {
-                            jsonEventDecoratorList.add(new JSONEventDecorator(response.getJSONObject(i).getJSONObject("event")));
+                            jsonEventDecoratorList.add(new JSONEventDecorator(response.getJSONObject(i)));
                         }
                         catch (JSONException e)
                         {

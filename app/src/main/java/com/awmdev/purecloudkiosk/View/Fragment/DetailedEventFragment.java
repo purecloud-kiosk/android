@@ -22,7 +22,6 @@ public class DetailedEventFragment extends Fragment
     //variables to store all of the views in the fragment
     private DetailedEventPresenter detailedEventPresenter;
     private NetworkImageView eventImage;
-    private TextView eventOrganization;
     private TextView eventDescription;
     private ImageView splahImageView;
     private TextView eventLocation;
@@ -35,8 +34,7 @@ public class DetailedEventFragment extends Fragment
     public static final int DATE = EVENT_NAME + 1;
     public static final int DESCRIPTION = DATE + 1;
     public static final int LOCATION = DESCRIPTION + 1;
-    public static final int ORGANIZATION = LOCATION + 1;
-    public static final int PRIVACY = ORGANIZATION + 1;
+    public static final int PRIVACY = LOCATION + 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -54,8 +52,6 @@ public class DetailedEventFragment extends Fragment
         RelativeLayout relativeLayout = (RelativeLayout)inflater.inflate(R.layout.fragment_detailed_event,container,false);
         //grab the components from the view,starting with event name
         eventName = (TextView)relativeLayout.findViewById(R.id.fdevent_event_name);
-        //grab the organization textview
-        eventOrganization = (TextView)relativeLayout.findViewById(R.id.fdevent_organization);
         //grab the privacy textview
         eventPrivacy = (TextView)relativeLayout.findViewById(R.id.fdevent_privacy);
         //grab the event location textview
@@ -106,9 +102,6 @@ public class DetailedEventFragment extends Fragment
         {
             case EVENT_NAME:
                 textView = eventName;
-                break;
-            case ORGANIZATION:
-                textView = eventOrganization;
                 break;
             case PRIVACY:
                 textView = eventPrivacy;

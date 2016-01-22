@@ -98,7 +98,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             //string to store image url
             String imageURL;
             //check to see if event has image associated
-            if(!(imageURL = jsonEventDecorator.getString("image_url")).equalsIgnoreCase("null"))
+            if(!(imageURL = jsonEventDecorator.getString("thumbnail_url")).equalsIgnoreCase("null"))
             {
                 //grab image from url
                 eventImageView.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());
