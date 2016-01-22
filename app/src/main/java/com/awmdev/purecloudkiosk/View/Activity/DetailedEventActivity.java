@@ -1,13 +1,15 @@
 package com.awmdev.purecloudkiosk.View.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.awmdev.purecloudkiosk.R;
 
-public class DetailedEventActivity extends AppCompatActivity implements View.OnClickListener
+public class DetailedEventActivity extends AppCompatActivity implements View.OnClickListener, LaunchKioskInterface
 {
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -33,6 +35,19 @@ public class DetailedEventActivity extends AppCompatActivity implements View.OnC
     {
         //navigate to the last activity
         onBackPressed();
+    }
+
+    @Override
+    public void onLaunchKioskSelected(Parcelable jsonEventParcelable)
+    {
+        if(jsonEventParcelable != null)
+        {
+            //create the intent and pass the json object associated with the event
+            Intent intent = new Intent(getApplicationContext(), KioskActivity.class);
+            intent.putExtra("parcelable", jsonEventParcelable);
+            //start the activity
+            startActivity(intent);
+        }
     }
 }
 

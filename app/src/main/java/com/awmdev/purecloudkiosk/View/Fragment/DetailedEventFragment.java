@@ -4,8 +4,12 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -16,11 +20,13 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
 import com.awmdev.purecloudkiosk.Presenter.DetailedEventPresenter;
 import com.awmdev.purecloudkiosk.R;
+import com.awmdev.purecloudkiosk.View.Activity.LaunchKioskInterface;
 
 public class DetailedEventFragment extends Fragment
 {
     //variables to store all of the views in the fragment
     private DetailedEventPresenter detailedEventPresenter;
+    private Parcelable jsonEventParcelable;
     private NetworkImageView eventImage;
     private TextView eventDescription;
     private ImageView splahImageView;
@@ -68,12 +74,38 @@ public class DetailedEventFragment extends Fragment
         scrollView = (ScrollView)relativeLayout.findViewById(R.id.fdevent_main_layout);
         //populate the view with the passed bundle
         assignDataToView(getDecoratorFromIntent());
+        //set the option menu to true
+        setHasOptionsMenu(true);
         //return the inflated view
         return relativeLayout;
     }
 
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater)
+    {
+        // Inflate the menu
+        inflater.inflate(R.menu.detailed_event_menu, menu);
+        //grab the launch menu item
+        MenuItem menuItem = menu.findItem(R.id.menu_start_kiosk);
+        //add the item on click listener
+        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item)
+            {
+                ((LaunchKioskInterface)getActivity()).onLaunchKioskSelected(jsonEventParcelable);
+                return true;
+            }
+        });
+        //call the super class
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
     public void assignDataToView(Parcelable jsonEventDecorator)
     {
+        //save the parcelable locally for starting the kiosk
+        jsonEventParcelable = jsonEventDecorator;
+        //check to see if the decorator is null and change the view appropriately
         if(jsonEventDecorator == null)
         {
            scrollView.setVisibility(View.GONE);

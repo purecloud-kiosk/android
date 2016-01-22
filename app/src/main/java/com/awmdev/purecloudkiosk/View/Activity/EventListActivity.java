@@ -6,26 +6,14 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.ActionBarOverlayLayout;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Fragment.DetailedEventFragment;
 
-public class EventListActivity extends AppCompatActivity
+public class EventListActivity extends AppCompatActivity implements LaunchKioskInterface
 {
     private Toolbar activityToolbar;
 
@@ -69,6 +57,19 @@ public class EventListActivity extends AppCompatActivity
         {
             //send the data to the other fragment
             ((DetailedEventFragment)(fragment)).assignDataToView(jsonEventParcelable);
+        }
+    }
+
+    @Override
+    public void onLaunchKioskSelected(Parcelable jsonEventParcelable)
+    {
+        if(jsonEventParcelable != null)
+        {
+            //create the intent and pass the json object associated with the event
+            Intent intent = new Intent(getApplicationContext(), KioskActivity.class);
+            intent.putExtra("parcelable", jsonEventParcelable);
+            //start the activity
+            startActivity(intent);
         }
     }
 
