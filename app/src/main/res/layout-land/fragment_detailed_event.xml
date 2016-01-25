@@ -15,149 +15,160 @@
         android:gravity="center_vertical|center_horizontal"
         android:visibility="gone"/>
 
-    <ScrollView
-        android:id="@+id/fdevent_main_layout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white">
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <!-- Image Banner -->
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/fdevent_imageview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="100dp"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="4"/>
 
         <!--Layout To Host The Main View-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ScrollView
+            android:id="@+id/fdevent_main_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:background="@android:color/white"
-            android:orientation="vertical">
+            android:layout_weight="6">
 
-            <!-- Image Banner -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="100">
+                android:background="@android:color/white"
+                android:orientation="vertical">
 
-                <com.android.volley.toolbox.NetworkImageView
-                    android:id="@+id/fdevent_imageview"
-                    android:layout_width="0dp"
+                <!-- Event Information -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="100dp"
-                    android:adjustViewBounds="true"
-                    android:layout_weight="40"/>
+                    android:orientation="vertical">
 
-                <RelativeLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="60">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:text="@string/title"
+                        android:padding="4dp"
+                        android:textSize="22sp"/>
 
                     <TextView
                         android:id="@+id/fdevent_event_name"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:singleLine="true"
-                        android:layout_margin = "16dp"
-                        android:gravity="center_vertical"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:paddingLeft = "16dp"
+                        android:paddingRight="16dp"
+                        android:textSize="16sp"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimary"
-                        android:textSize="28sp"/>
+                        android:text="@string/privacy"
+                        android:padding="4dp"
+                        android:textSize="22sp"/>
 
-                </RelativeLayout>
+                    <TextView
+                        android:id="@+id/fdevent_privacy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="16sp"
+                        android:paddingLeft = "16dp"
+                        android:paddingRight="16dp"/>
 
-            </LinearLayout>
-            <!-- Event Information -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimary"
-                    android:text="@string/privacy"
-                    android:padding="4dp"
-                    android:textSize="22sp"/>
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/fdevent_privacy"
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:text="@string/location"
+                        android:padding="4dp"
+                        android:textSize="22sp"/>
+
+                    <TextView
+                        android:id="@+id/fdevent_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="16sp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="16sp"
-                    android:paddingLeft = "16dp"
-                    android:paddingRight="16dp"/>
+                    android:orientation="vertical">
 
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:text="@string/date"
+                        android:padding="4dp"
+                        android:textSize="22sp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/fdevent_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="16sp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimary"
-                    android:text="@string/location"
-                    android:padding="4dp"
-                    android:textSize="22sp"/>
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/fdevent_location"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="16sp"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:text="@string/description"
+                        android:padding="4dp"
+                        android:textSize="22sp"/>
 
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/fdevent_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="16sp"
+                        android:paddingLeft = "16dp"
+                        android:paddingRight="16dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimary"
-                    android:text="@string/date"
-                    android:padding="4dp"
-                    android:textSize="22sp"/>
-
-                <TextView
-                    android:id="@+id/fdevent_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="16sp"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"/>
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimary"
-                    android:text="@string/description"
-                    android:padding="4dp"
-                    android:textSize="22sp"/>
-
-                <TextView
-                    android:id="@+id/fdevent_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="16sp"
-                    android:paddingLeft = "16dp"
-                    android:paddingRight="16dp"/>
+                </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </ScrollView>
 
-    </ScrollView>
+
+
+    </LinearLayout>
 
 </RelativeLayout>
 
