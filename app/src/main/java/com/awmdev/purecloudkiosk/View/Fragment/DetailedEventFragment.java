@@ -29,7 +29,7 @@ public class DetailedEventFragment extends Fragment
     private Parcelable jsonEventParcelable;
     private NetworkImageView eventImage;
     private TextView eventDescription;
-    private ImageView splahImageView;
+    private ImageView splashImageView;
     private TextView eventLocation;
     private ScrollView scrollView;
     private TextView eventPrivacy;
@@ -69,7 +69,7 @@ public class DetailedEventFragment extends Fragment
         //grab the network image view banner
         eventImage = (NetworkImageView)relativeLayout.findViewById(R.id.fdevent_imageview);
         //grab the splash view
-        splahImageView = (ImageView)relativeLayout.findViewById(R.id.fdevent_splash_view);
+        splashImageView = (ImageView)relativeLayout.findViewById(R.id.fdevent_splash_view);
         //grab the main layout for event information
         scrollView = (ScrollView)relativeLayout.findViewById(R.id.fdevent_main_layout);
         //populate the view with the passed bundle
@@ -109,12 +109,12 @@ public class DetailedEventFragment extends Fragment
         if(jsonEventDecorator == null)
         {
            scrollView.setVisibility(View.GONE);
-           splahImageView.setVisibility(View.VISIBLE);
+           splashImageView.setVisibility(View.VISIBLE);
         }
         else
         {
             scrollView.setVisibility(View.VISIBLE);
-            splahImageView.setVisibility(View.GONE);
+            splashImageView.setVisibility(View.GONE);
             detailedEventPresenter.populateView((JSONEventDecorator) jsonEventDecorator);
         }
     }

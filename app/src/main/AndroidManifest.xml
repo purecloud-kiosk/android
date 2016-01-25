@@ -4,7 +4,9 @@
     package="com.awmdev.purecloudkiosk">
 
     <uses-permission android:name='android.permission.INTERNET'/>
-
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         android:allowBackup="true"
@@ -29,8 +31,15 @@
         </activity>
         <activity
             android:name=".View.Activity.KioskActivity">
-
         </activity>
+
+        <receiver
+            android:name=".BroadcastReceiver.ScreenReceiver">
+                <intent-filter>
+                    <action android:name="android.intent.action.SCREEN_OFF"/>
+                </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
