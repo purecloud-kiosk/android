@@ -16,4 +16,5 @@
     <string name="search">Search</string>
     <string name="check_in">Check In</string>
     <string name="launch_kiosk">Launch Kiosk</string>
+    <string name="title">Event Name</string>
 </resources>
