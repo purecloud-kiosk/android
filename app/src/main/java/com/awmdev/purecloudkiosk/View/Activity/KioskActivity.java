@@ -79,8 +79,8 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
         super.onWindowFocusChanged(hasFocus);
         if(!hasFocus)
         {
-            Intent closeWindow = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-            sendBroadcast(closeWindow);
+            //Intent closeWindow = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            //sendBroadcast(closeWindow);
         }
     }
 
@@ -96,7 +96,7 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onBackPressed()
     {
-        //do nothing, prevent the user from leaving
+        onBackPressed();
     }
 
     public JSONEventDecorator grabDecoratorFromIntent()
@@ -118,6 +118,9 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v)
     {
         //navigate to the next activity
-        finish();
+        //finish();
+        Intent intent = new Intent(getApplicationContext(),BarcodeActivity.class);
+        startActivity(intent);
+
     }
 }
