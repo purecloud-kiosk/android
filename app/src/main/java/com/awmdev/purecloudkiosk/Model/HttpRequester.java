@@ -27,7 +27,6 @@ import java.util.Map;
 
 public class HttpRequester
 {
-    private RequestQueue singleThreadedRequestQueue;
     private static HttpRequester httpRequester;
     private Request currentSearchRequest;
     private RequestQueue requestQueue;
@@ -62,7 +61,7 @@ public class HttpRequester
         return httpRequester == null ? httpRequester = new HttpRequester(context) : httpRequester;
     }
 
-    public void sendHttpLoginRequest(String email,String password, Response.Listener<JSONObject> callback,Response.ErrorListener errorCallback)
+    public void sendHttpLoginRequest(String email,String password,String organization, Response.Listener<JSONObject> callback,Response.ErrorListener errorCallback)
     {
         //URL for the request
         String url = "http://charlie-duong.com:8080/purecloud/login";
@@ -70,6 +69,7 @@ public class HttpRequester
         Map<String,String> jsonMap = new HashMap<>();
         jsonMap.put("email",email);
         jsonMap.put("password", password);
+        jsonMap.put("orgName",organization);
         JSONObject jsonObject = new JSONObject(jsonMap);
         //Request a json response from the provided url
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, url,jsonObject,callback,errorCallback);

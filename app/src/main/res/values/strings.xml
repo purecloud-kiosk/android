@@ -8,6 +8,7 @@
     <string name="login_error_missing_username">You Must Specify A Username Before Logging In</string>
     <string name="login_error_missing_password">You Must Specify A Password Before Logging In</string>
     <string name="login_error_missing_fields">You Must Specify A Username And Password Before Logging In</string>
+    <string name="login_error_missing_organization">You Must Specify A Organization</string>
     <string name="login_error_server_timeout">Unable To Login Into PureCloud Servers, Try Again Later</string>
     <string name="date">Date </string>
     <string name="location">Location </string>
