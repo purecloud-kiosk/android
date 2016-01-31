@@ -1,6 +1,7 @@
 package com.awmdev.purecloudkiosk.Presenter;
 
 import android.text.TextUtils;
+import android.view.View;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
@@ -14,6 +15,7 @@ import com.awmdev.purecloudkiosk.View.Fragment.LoginFragment;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 public class LoginPresenter
 {
@@ -24,7 +26,7 @@ public class LoginPresenter
         this.loginFragment = loginFragment;
     }
 
-    public void validateCredentials(String username, String password)
+    public void validateCredentials(String username, String password,String organization)
     {
         //check to see if the username/password fields contain data
         if(!TextUtils.isEmpty(username)&& !TextUtils.isEmpty(password))
@@ -32,7 +34,7 @@ public class LoginPresenter
             //remove the old error from the view
             loginFragment.removeErrorText();
             //fields contain data, send http login request
-            sendHttpLoginRequest(username, password);
+            sendHttpLoginRequest(username, password,organization);
         }
         else
         {
@@ -55,9 +57,10 @@ public class LoginPresenter
                 }
             }
         }
+
     }
 
-    public void sendHttpLoginRequest(String email,String password)
+    public void sendHttpLoginRequest(String email,String password,String organization)
     {
         //Create an instance of the httprequester
         HttpRequester httpRequester = HttpRequester.getInstance(loginFragment.getActivity().getApplicationContext());
@@ -90,11 +93,21 @@ public class LoginPresenter
                 if(networkResponse != null && networkResponse.statusCode == HttpStatus.SC_FORBIDDEN)
                     loginFragment.setError(R.string.login_error_invalid);
                 else
-                    loginFragment.setError(R.string.login_error_server_timeout);
+                {
+                    if(networkResponse != null && networkResponse.statusCode == HttpStatus.SC_MULTIPLE_CHOICES)
+                    {
+                        //change the visibility of the org view
+                        loginFragment.setOrganizationWrapperVisibility(View.VISIBLE);
+                        //set the error
+                        loginFragment.setError(R.string.login_error_missing_organization);
+                    }
+                    else
+                        loginFragment.setError(R.string.login_error_server_timeout);
+                }
             }
         };
         //send the request to volley
-        httpRequester.sendHttpLoginRequest(email,password,callback,errorCallback);
+        httpRequester.sendHttpLoginRequest(email,password,organization,callback,errorCallback);
     }
 
 

@@ -21,8 +21,10 @@ import com.awmdev.purecloudkiosk.R;
 public class LoginFragment extends Fragment implements View.OnClickListener
 {
     private LoginPresenter loginPresenter;
-    private EditText userEditText;
+    private EditText organizationEditText;
+    private View organizationViewWrapper;
     private EditText passwordEditText;
+    private EditText userEditText;
     private TextView errorText;
     private Button loginButton;
 
@@ -45,6 +47,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener
         userEditText = (EditText)layout.findViewById(R.id.flogin_user_edit);
         passwordEditText = (EditText)layout.findViewById(R.id.flogin_password_edit);
         errorText = (TextView)layout.findViewById(R.id.flogin_error_text);
+        organizationEditText = (EditText)layout.findViewById(R.id.flogin_organization_edit);
+        organizationViewWrapper = (View)layout.findViewById(R.id.flogin_organization_wrapper);
         //register the onclick listener for the button
         loginButton.setOnClickListener(this);
         //return to the view
@@ -62,10 +66,21 @@ public class LoginFragment extends Fragment implements View.OnClickListener
         errorText.setText(null);
     }
 
+    public void setOrganizationWrapperVisibility(int visibility)
+    {
+        organizationViewWrapper.setVisibility(visibility);
+    }
+
+    public int getOrganizationWrapperVisibility()
+    {
+        return organizationViewWrapper.getVisibility();
+    }
+
     @Override
     public void onClick(View v)
     {
-        loginPresenter.validateCredentials(userEditText.getText().toString(),passwordEditText.getText().toString());
+        loginPresenter.validateCredentials(userEditText.getText().toString(),
+                passwordEditText.getText().toString(),organizationEditText.getText().toString());
     }
 
 }
