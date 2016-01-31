@@ -70,12 +70,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener
     {
         organizationViewWrapper.setVisibility(visibility);
     }
-
-    public int getOrganizationWrapperVisibility()
-    {
-        return organizationViewWrapper.getVisibility();
-    }
-
+    
     @Override
     public void onClick(View v)
     {
