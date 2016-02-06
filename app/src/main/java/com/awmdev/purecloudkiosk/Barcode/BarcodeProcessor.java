@@ -19,7 +19,7 @@ public class BarcodeProcessor implements Detector.Processor<Barcode>
     @Override
     public void release()
     {
-        //nothing to release since there is no gui tracker associated with the processor
+        //nothing to release since there is no tracker associated with the processor
     }
 
     @Override

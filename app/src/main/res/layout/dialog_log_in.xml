@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dlogin_user_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="22sp"
+            android:text="@string/login_username"
+            android:fontFamily="sans-serif"/>
+
+        <EditText
+            android:id="@+id/dlogin_user_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:textSize="22sp"
+            android:textColor="@color/colorPrimary"
+            android:inputType="textEmailAddress"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dlogin_password_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/login_password"
+            android:fontFamily="sans-serif"/>
+
+        <EditText
+            android:id="@+id/dlogin_password_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf= "@id/dlogin_password_text"
+            android:layout_alignTop="@id/dlogin_password_text"
+            android:textColor="@color/colorPrimary"
+            android:inputType="textPassword"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/organization"
+            android:fontFamily="sans-serif"/>
+
+        <EditText
+            android:id="@+id/dlogin_organization_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:inputType="text"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dlogin_error_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/errorTextColor"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </LinearLayout>
+
+</LinearLayout>

@@ -18,4 +18,6 @@
     <string name="check_in">Check In</string>
     <string name="launch_kiosk">Launch Kiosk</string>
     <string name="title">Event Name</string>
+    <string name="organization">Organization</string>
+    <string name="not_now">Not Now</string>
 </resources>

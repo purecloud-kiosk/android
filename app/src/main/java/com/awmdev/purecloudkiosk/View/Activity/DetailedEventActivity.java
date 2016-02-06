@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.awmdev.purecloudkiosk.R;
+import com.awmdev.purecloudkiosk.View.Interfaces.LaunchKioskInterface;
 
 public class DetailedEventActivity extends AppCompatActivity implements View.OnClickListener, LaunchKioskInterface
 {

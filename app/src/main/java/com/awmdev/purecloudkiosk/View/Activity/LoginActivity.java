@@ -13,7 +13,7 @@ public class LoginActivity extends AppCompatActivity
     {
         //Call the super class
         super.onCreate(savedInstanceState);
-        //Set the content view which contains the frame for the fragments
+        //Set the content view which contains the login fragment
         setContentView(R.layout.activity_login);
     }
 

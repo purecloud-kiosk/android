@@ -2,28 +2,24 @@ package com.awmdev.purecloudkiosk.View.Activity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-import com.awmdev.purecloudkiosk.BroadcastReceiver.ScreenReceiver;
-import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
+import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Presenter.KioskPresenter;
 import com.awmdev.purecloudkiosk.R;
+import com.awmdev.purecloudkiosk.View.Interfaces.KioskViewInterface;
 
-public class KioskActivity extends AppCompatActivity implements View.OnClickListener
+public class KioskActivity extends AppCompatActivity implements View.OnClickListener,KioskViewInterface
 {
-    private ScreenReceiver screenReceiver;
     private NetworkImageView eventImage;
     private TextView eventNameTextView;
     private Button checkInButton;
@@ -53,10 +49,6 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
         checkInButton.setOnClickListener(this);
         //yes im creating a presenter, all just to follow convention
         new KioskPresenter(this).populateView(grabDecoratorFromIntent());
-        //register the broadcast receiver
-        screenReceiver = new ScreenReceiver(getApplicationContext());
-        //register the receiver
-        screenReceiver.registerReceiver();
     }
 
     @Override
@@ -89,19 +81,17 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
     {
         //call the super
         super.onDestroy();
-        //disable our screen receiver
-        screenReceiver.removeReceiver();
     }
 
     @Override
     public void onBackPressed()
     {
-        onBackPressed();
+        super.onBackPressed();
     }
 
-    public JSONEventDecorator grabDecoratorFromIntent()
+    public JSONDecorator grabDecoratorFromIntent()
     {
-       return (JSONEventDecorator)getIntent().getExtras().getParcelable("parcelable");
+       return (JSONDecorator)getIntent().getExtras().getParcelable("parcelable");
     }
 
     public void setEventImage(ImageLoader imageLoader, String url)
@@ -118,7 +108,6 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v)
     {
         //navigate to the next activity
-        //finish();
         Intent intent = new Intent(getApplicationContext(),BarcodeActivity.class);
         startActivity(intent);
 

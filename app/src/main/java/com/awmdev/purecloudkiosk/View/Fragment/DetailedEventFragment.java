@@ -9,7 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -17,12 +16,13 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
+import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Presenter.DetailedEventPresenter;
 import com.awmdev.purecloudkiosk.R;
-import com.awmdev.purecloudkiosk.View.Activity.LaunchKioskInterface;
+import com.awmdev.purecloudkiosk.View.Interfaces.DetailedEventViewInterface;
+import com.awmdev.purecloudkiosk.View.Interfaces.LaunchKioskInterface;
 
-public class DetailedEventFragment extends Fragment
+public class DetailedEventFragment extends Fragment implements DetailedEventViewInterface
 {
     //variables to store all of the views in the fragment
     private DetailedEventPresenter detailedEventPresenter;
@@ -35,12 +35,6 @@ public class DetailedEventFragment extends Fragment
     private TextView eventPrivacy;
     private TextView eventName;
     private TextView eventDate;
-    //int to store the selection for the textviews
-    public static final int EVENT_NAME = 0;
-    public static final int DATE = EVENT_NAME + 1;
-    public static final int DESCRIPTION = DATE + 1;
-    public static final int LOCATION = DESCRIPTION + 1;
-    public static final int PRIVACY = LOCATION + 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -115,14 +109,14 @@ public class DetailedEventFragment extends Fragment
         {
             scrollView.setVisibility(View.VISIBLE);
             splashImageView.setVisibility(View.GONE);
-            detailedEventPresenter.populateView((JSONEventDecorator) jsonEventDecorator);
+            detailedEventPresenter.populateView((JSONDecorator) jsonEventDecorator);
         }
     }
 
 
-    private JSONEventDecorator getDecoratorFromIntent()
+    private JSONDecorator getDecoratorFromIntent()
     {
-        return (JSONEventDecorator) getActivity().getIntent().getExtras().getParcelable("parcelable");
+        return (JSONDecorator) getActivity().getIntent().getExtras().getParcelable("parcelable");
     }
 
     public void assignTextView(int selection, String textSelection)

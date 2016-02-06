@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Fragment.DetailedEventFragment;
+import com.awmdev.purecloudkiosk.View.Interfaces.LaunchKioskInterface;
 
 public class EventListActivity extends AppCompatActivity implements LaunchKioskInterface
 {

@@ -1,10 +1,8 @@
 package com.awmdev.purecloudkiosk.Presenter;
 
-import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
+import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
-import com.awmdev.purecloudkiosk.View.Activity.EventListActivity;
-import com.awmdev.purecloudkiosk.View.Fragment.DetailedEventFragment;
-import com.awmdev.purecloudkiosk.View.Fragment.EventListFragment;
+import com.awmdev.purecloudkiosk.View.Interfaces.DetailedEventViewInterface;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,43 +12,43 @@ import java.util.Date;
  */
 public class DetailedEventPresenter
 {
-    private DetailedEventFragment detailedEventFragment;
+    private DetailedEventViewInterface detailedEventViewInterface;
 
-    public DetailedEventPresenter(DetailedEventFragment detailedEventFragment)
+    public DetailedEventPresenter(DetailedEventViewInterface detailedEventViewInterface)
     {
-        this.detailedEventFragment = detailedEventFragment;
+        this.detailedEventViewInterface = detailedEventViewInterface;
     }
 
-    public void populateView(JSONEventDecorator jsonEventDecorator)
+    public void populateView(JSONDecorator jsonDecorator)
     {
         //grab the content from the json and set it to the textviews
-        detailedEventFragment.assignTextView(detailedEventFragment.DESCRIPTION, jsonEventDecorator.getString("description"));
+        detailedEventViewInterface.assignTextView(detailedEventViewInterface.DESCRIPTION, jsonDecorator.getString("description"));
         //grab the boolean from the privacy to convert to public / private
-        if(Boolean.parseBoolean(jsonEventDecorator.getString("private")))
-            detailedEventFragment.assignTextView(detailedEventFragment.PRIVACY,"Private");
+        if(Boolean.parseBoolean(jsonDecorator.getString("private")))
+            detailedEventViewInterface.assignTextView(detailedEventViewInterface.PRIVACY,"Private");
         else
-            detailedEventFragment.assignTextView(detailedEventFragment.PRIVACY,"Public");
-        detailedEventFragment.assignTextView(detailedEventFragment.EVENT_NAME,jsonEventDecorator.getString("title"));
-        detailedEventFragment.assignTextView(detailedEventFragment.LOCATION,jsonEventDecorator.getString("location"));
+            detailedEventViewInterface.assignTextView(detailedEventViewInterface.PRIVACY,"Public");
+        detailedEventViewInterface.assignTextView(detailedEventViewInterface.EVENT_NAME, jsonDecorator.getString("title"));
+        detailedEventViewInterface.assignTextView(detailedEventViewInterface.LOCATION, jsonDecorator.getString("location"));
         //grab the date in the form of the epoch
-        Long epoch = Long.parseLong(jsonEventDecorator.getString("date"));
+        Long epoch = Long.parseLong(jsonDecorator.getString("date"));
         //create a instance of date from the epoch
         Date date = new Date(epoch);
         //set the date using simple date format
-        detailedEventFragment.assignTextView(detailedEventFragment.DATE,new SimpleDateFormat("hh:mm a 'on' MM-dd-yyyy").format(date));
+        detailedEventViewInterface.assignTextView(detailedEventViewInterface.DATE,new SimpleDateFormat("hh:mm a 'on' MM-dd-yyyy").format(date));
         //set the image view
         //string to store image url
         String imageURL;
         //check to see if event has image associated
-        if(!(imageURL = jsonEventDecorator.getString("image_url")).equalsIgnoreCase("null"))
+        if(!(imageURL = jsonDecorator.getString("image_url")).equalsIgnoreCase("null"))
         {
             //grab image from url
-            detailedEventFragment.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());
+            detailedEventViewInterface.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());
         }
         else
         {
             //place default image instead, this is not the final image nor will it be an http request
-            detailedEventFragment.setImageUrl("https://www.google.com/logos/doodles/2015/new-years-eve-2015-5985438795825152-hp.gif", HttpRequester.getInstance(null).getImageLoader());
+            detailedEventViewInterface.setImageUrl("https://www.google.com/logos/doodles/2015/new-years-eve-2015-5985438795825152-hp.gif", HttpRequester.getInstance(null).getImageLoader());
         }
     }
 }

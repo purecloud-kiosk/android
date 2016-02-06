@@ -1,12 +1,7 @@
 package com.awmdev.purecloudkiosk.View.Fragment;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +10,12 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.awmdev.purecloudkiosk.View.Interfaces.LoginViewInterface;
 import com.awmdev.purecloudkiosk.Presenter.LoginPresenter;
 import com.awmdev.purecloudkiosk.R;
+import com.awmdev.purecloudkiosk.View.Activity.LoginActivity;
 
-public class LoginFragment extends Fragment implements View.OnClickListener
+public class LoginFragment extends Fragment implements View.OnClickListener,LoginViewInterface
 {
     private LoginPresenter loginPresenter;
     private EditText organizationEditText;
@@ -55,27 +52,36 @@ public class LoginFragment extends Fragment implements View.OnClickListener
         return layout;
     }
 
+    @Override
     public void setError(int resourceID)
     {
         //set the error from a pre-made string
         errorText.setText(resourceID);
     }
 
-    public void removeErrorText()
+    @Override
+    public void removeError()
     {
         errorText.setText(null);
     }
 
+    @Override
     public void setOrganizationWrapperVisibility(int visibility)
     {
         organizationViewWrapper.setVisibility(visibility);
     }
-    
+
+    @Override
+    public void navigateToEventList(String authenticationToken)
+    {
+        ((LoginActivity)getActivity()).onLoginSuccessful(authenticationToken);
+    }
+
     @Override
     public void onClick(View v)
     {
         loginPresenter.validateCredentials(userEditText.getText().toString(),
-                passwordEditText.getText().toString(),organizationEditText.getText().toString());
+                passwordEditText.getText().toString(), organizationEditText.getText().toString());
     }
 
 }

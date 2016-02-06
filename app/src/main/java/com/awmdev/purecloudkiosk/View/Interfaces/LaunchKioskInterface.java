@@ -1,4 +1,4 @@
-package com.awmdev.purecloudkiosk.View.Activity;
+package com.awmdev.purecloudkiosk.View.Interfaces;
 
 import android.os.Parcelable;
 

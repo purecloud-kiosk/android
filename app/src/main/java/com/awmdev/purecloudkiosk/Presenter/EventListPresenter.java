@@ -6,8 +6,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
-import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
-import com.awmdev.purecloudkiosk.View.Fragment.EventListFragment;
+import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
+import com.awmdev.purecloudkiosk.View.Interfaces.EventListViewInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,18 +18,18 @@ import java.util.List;
 public class EventListPresenter
 {
     private String tag = EventListPresenter.class.getSimpleName();
-    private EventListFragment eventListFragment;
+    private EventListViewInterface eventListViewInterface;
     private EventListModel eventListModel;
 
-    public EventListPresenter(EventListFragment eventListFragment, EventListModel eventListModel)
+    public EventListPresenter(EventListViewInterface eventListViewInterface, EventListModel eventListModel)
     {
-        this.eventListFragment = eventListFragment;
+        this.eventListViewInterface = eventListViewInterface;
         this.eventListModel = eventListModel;
     }
 
     public void onDestroy()
     {
-        eventListFragment = null;
+        eventListViewInterface = null;
         eventListModel = null;
     }
 
@@ -45,15 +45,15 @@ public class EventListPresenter
                 if(response.length() > 0)
                 {
                     //remove the no event splash image just in case it exists
-                    eventListFragment.setEmptyStateViewVisibility(false);
+                    eventListViewInterface.setEmptyStateViewVisibility(false);
                     //create a collection to store the parsed json data
-                    List<JSONEventDecorator> jsonEventDecoratorList = new ArrayList<>();
+                    List<JSONDecorator> jsonDecoratorList = new ArrayList<>();
                     //parse the json response into jsoneventwrapper class
                     for (int i = 0; i < response.length(); ++i)
                     {
                         try
                         {
-                            jsonEventDecoratorList.add(new JSONEventDecorator(response.getJSONObject(i)));
+                            jsonDecoratorList.add(new JSONDecorator(response.getJSONObject(i)));
                         }
                         catch (JSONException e)
                         {
@@ -61,9 +61,9 @@ public class EventListPresenter
                         }
                     }
                     //pass the data to the event adapter
-                    eventListModel.appendDataSet(jsonEventDecoratorList);
+                    eventListModel.appendDataSet(jsonDecoratorList);
                     //notify the adapter of the dataset change
-                    eventListFragment.notifyEventAdapterOfDataSetChange();
+                    eventListViewInterface.notifyEventAdapterOfDataSetChange();
                     //increment the page number
                     eventListModel.incrementPageNumber();
                 }
@@ -71,7 +71,7 @@ public class EventListPresenter
                 {
                     //check to see if the state is empty and produce the required view
                     if(eventListModel.getEventListDataSize() == 0)
-                        eventListFragment.setEmptyStateViewVisibility(true);
+                        eventListViewInterface.setEmptyStateViewVisibility(true);
                 }
             }
         };
@@ -143,7 +143,7 @@ public class EventListPresenter
             //reset the scroll adapter
             resetScrollAdapter();
             //notify the adapter of the data set change
-            eventListFragment.notifyEventAdapterOfDataSetChange();
+            eventListViewInterface.notifyEventAdapterOfDataSetChange();
         }
     }
 
@@ -159,15 +159,15 @@ public class EventListPresenter
                 if (response.length() > 0)
                 {
                     //remove the splash image if it exists
-                    eventListFragment.setEmptyStateViewVisibility(false);
+                    eventListViewInterface.setEmptyStateViewVisibility(false);
                     //create a collection to store the parsed json data
-                    List<JSONEventDecorator> jsonEventDecoratorList = new ArrayList<>();
+                    List<JSONDecorator> jsonDecoratorList = new ArrayList<>();
                     //parse the json response into jsoneventwrapper class
                     for (int i = 0; i < response.length(); ++i)
                     {
                         try
                         {
-                            jsonEventDecoratorList.add(new JSONEventDecorator(response.getJSONObject(i)));
+                            jsonDecoratorList.add(new JSONDecorator(response.getJSONObject(i)));
                         }
                         catch (JSONException e)
                         {
@@ -176,11 +176,11 @@ public class EventListPresenter
                     }
                     //check to see if this is the first search or subsequent search
                     if(firstSearch)
-                        eventListModel.applyFilterToDataSet(jsonEventDecoratorList);
+                        eventListModel.applyFilterToDataSet(jsonDecoratorList);
                     else
-                        eventListModel.appendFilterToDataSet(jsonEventDecoratorList);
+                        eventListModel.appendFilterToDataSet(jsonDecoratorList);
                     //notify the adapter of the dataset change
-                    eventListFragment.notifyEventAdapterOfDataSetChange();
+                    eventListViewInterface.notifyEventAdapterOfDataSetChange();
                     //increment the page number
                     eventListModel.incrementPageNumber();
                 }
@@ -191,10 +191,10 @@ public class EventListPresenter
                     if(firstSearch)
                         eventListModel.clearFilterDataSet();
                     //notify the adapter of the change in data set
-                    eventListFragment.notifyEventAdapterOfDataSetChange();
+                    eventListViewInterface.notifyEventAdapterOfDataSetChange();
                     //check to see if the state is empty and produce the required view
                     if(eventListModel.getEventListDataSize() == 0)
-                        eventListFragment.setEmptyStateViewVisibility(true);
+                        eventListViewInterface.setEmptyStateViewVisibility(true);
                 }
             }
         };

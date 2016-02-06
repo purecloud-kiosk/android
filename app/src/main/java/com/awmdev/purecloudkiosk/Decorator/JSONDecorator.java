@@ -9,17 +9,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class JSONEventDecorator extends JSONObject implements Parcelable
+public class JSONDecorator extends JSONObject implements Parcelable
 {
     //tag for all logging operations
-    private static String tag = JSONEventDecorator.class.getSimpleName();
+    private static String tag = JSONDecorator.class.getSimpleName();
 
-    public JSONEventDecorator(JSONObject jsonObject) throws JSONException
+    public JSONDecorator(JSONObject jsonObject) throws JSONException
     {
         super(jsonObject.toString());
     }
 
-    public JSONEventDecorator(String jsonString)throws JSONException
+    public JSONDecorator(String jsonString)throws JSONException
     {
         super(jsonString);
     }
@@ -54,7 +54,7 @@ public class JSONEventDecorator extends JSONObject implements Parcelable
     }
 
     //Class to handle the recreating of the json object
-    public static final Parcelable.Creator<JSONEventDecorator> CREATOR = new Parcelable.Creator()
+    public static final Parcelable.Creator<JSONDecorator> CREATOR = new Parcelable.Creator()
     {
 
         @Override
@@ -62,7 +62,7 @@ public class JSONEventDecorator extends JSONObject implements Parcelable
         {
             try
             {
-                return new JSONEventDecorator(source.readString());
+                return new JSONDecorator(source.readString());
             }
             catch(JSONException ex)
             {
@@ -76,7 +76,7 @@ public class JSONEventDecorator extends JSONObject implements Parcelable
         @Override
         public Object[] newArray(int size)
         {
-            return new JSONEventDecorator[size];
+            return new JSONDecorator[size];
         }
     };
 }

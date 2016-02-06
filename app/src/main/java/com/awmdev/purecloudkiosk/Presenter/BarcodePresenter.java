@@ -1,43 +1,78 @@
 package com.awmdev.purecloudkiosk.Presenter;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.util.SparseArray;
-import android.widget.Toast;
 
-import com.awmdev.purecloudkiosk.View.Activity.BarcodeActivity;
+import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
+import com.awmdev.purecloudkiosk.Model.HttpRequester;
+import com.awmdev.purecloudkiosk.View.Interfaces.BarcodeViewInterface;
 import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
+
+import org.json.JSONException;
 
 public class BarcodePresenter
 {
-    private boolean detectionInProgress = false;
-    private BarcodeActivity barcodeActivity;
+    private final String TAG = BarcodePresenter.class.getSimpleName();
+    private boolean checkInProgress = false;
+    private BarcodeViewInterface barcodeViewInterface;
 
-    public BarcodePresenter(BarcodeActivity barcodeActivity)
+    public BarcodePresenter(BarcodeViewInterface barcodeViewInterface)
     {
-        this.barcodeActivity = barcodeActivity;
+        this.barcodeViewInterface = barcodeViewInterface;
     }
 
     public void onBarcodeDetected(Detector.Detections<Barcode> detections)
     {
         synchronized (this)
         {
-            if(detectionInProgress)
+            if(checkInProgress)
                 return;
-            detectionInProgress=true;
+            checkInProgress =true;
         }
-        SparseArray<Barcode> barcodeArray = detections.getDetectedItems();
+        try
+        {
+            //grab the barcode array
+            SparseArray<Barcode> barcodeArray = detections.getDetectedItems();
+            //grab the individual barcode from the array
+            Barcode barcode = barcodeArray.valueAt(0);
+            //grab the raw value from the string array and create the json object
+            final JSONDecorator jsonBarcodeObject = new JSONDecorator(barcode.rawValue);
+            //grab an instance of the http requester for the image
+            final HttpRequester httpRequester = HttpRequester.getInstance(null);
+            //display the dialog
+            barcodeViewInterface.displayCheckInDialog(httpRequester.getImageLoader(),jsonBarcodeObject.getString("image")
+                    ,jsonBarcodeObject.getString("name"));
+        }
+        catch(JSONException jx)
+        {
+            Log.d(TAG,"Improperly formatted barcode");
+        }
+    }
+
+    public void onCheckInSuccessful()
+    {
+        //this is where we will send our event check in
+
+        //this where we release our lock
         detectionComplete();
+    }
+
+    public void onLoginSelected()
+    {
+        synchronized (this)
+        {
+            if(checkInProgress)
+                return;
+            checkInProgress = true;
+        }
     }
 
     public void detectionComplete()
     {
         synchronized (this)
         {
-            detectionInProgress = false;
+            checkInProgress = false;
         }
     }
 }

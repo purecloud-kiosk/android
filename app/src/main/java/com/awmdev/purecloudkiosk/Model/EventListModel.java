@@ -3,7 +3,7 @@ package com.awmdev.purecloudkiosk.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
+import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,8 +11,8 @@ import java.util.List;
 
 public class EventListModel implements Parcelable
 {
-    private List<JSONEventDecorator> jsonEventDecoratorList = new ArrayList();
-    private List<JSONEventDecorator> eventDecoratorFilter = new ArrayList();
+    private List<JSONDecorator> jsonDecoratorList = new ArrayList();
+    private List<JSONDecorator> eventDecoratorFilter = new ArrayList();
     private int firstVisibleNonFilteredItemLocation;
     private int firstVisibleFilteredItemLocation;
     private String currentSearchPattern;
@@ -33,23 +33,23 @@ public class EventListModel implements Parcelable
         return authenticationToken;
     }
 
-    public void appendDataSet(Collection<JSONEventDecorator> eventDataCollection)
+    public void appendDataSet(Collection<JSONDecorator> eventDataCollection)
     {
         //assign the passed in dataset to the list
-        jsonEventDecoratorList.addAll(eventDataCollection);
+        jsonDecoratorList.addAll(eventDataCollection);
     }
 
-    public synchronized List<JSONEventDecorator> getEventListDataSet()
+    public synchronized List<JSONDecorator> getEventListDataSet()
     {
-        return jsonEventDecoratorList;
+        return jsonDecoratorList;
     }
 
-    public synchronized JSONEventDecorator getEventListItem(int position)
+    public synchronized JSONDecorator getEventListItem(int position)
     {
         if(filtered)
             return eventDecoratorFilter.get(position);
         else
-            return jsonEventDecoratorList.get(position);
+            return jsonDecoratorList.get(position);
     }
 
     public synchronized int getEventListDataSize()
@@ -57,7 +57,7 @@ public class EventListModel implements Parcelable
         if(filtered)
             return eventDecoratorFilter.size();
         else
-            return jsonEventDecoratorList.size();
+            return jsonDecoratorList.size();
     }
 
 
@@ -96,7 +96,7 @@ public class EventListModel implements Parcelable
      *
      * @param filter the data set that should be appended to the filter
      */
-    public synchronized void appendFilterToDataSet(List<JSONEventDecorator> filter)
+    public synchronized void appendFilterToDataSet(List<JSONDecorator> filter)
     {
             //add the new filter to the dataset
             eventDecoratorFilter.addAll(filter);
@@ -111,7 +111,7 @@ public class EventListModel implements Parcelable
      *
      *   @param filter the initial data set that should be appended to the filter
      */
-    public synchronized void applyFilterToDataSet(List<JSONEventDecorator> filter)
+    public synchronized void applyFilterToDataSet(List<JSONDecorator> filter)
     {
         //remove the old data from the set
         eventDecoratorFilter.clear();
@@ -214,7 +214,7 @@ public class EventListModel implements Parcelable
         if(filtered)
             dest.writeList(eventDecoratorFilter);
         //write the jsondecoratorlist to the parcel
-        dest.writeTypedList(jsonEventDecoratorList);
+        dest.writeTypedList(jsonDecoratorList);
         //write the previous total and pagenumber to the parcel
         dest.writeIntArray(new int[]{pageNumber,filterPageNumber});
     }
@@ -251,7 +251,7 @@ public class EventListModel implements Parcelable
             //clear the list
             parcelList.clear();
             //grab the jsondecoratorlist from the parcel
-            source.readTypedList(parcelList,JSONEventDecorator.CREATOR);
+            source.readTypedList(parcelList, JSONDecorator.CREATOR);
             //set the list to the model
             eventListModel.appendDataSet(parcelList);
             //return the completed model object

@@ -11,15 +11,12 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
-import com.awmdev.purecloudkiosk.Decorator.JSONEventDecorator;
+import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Activity.EventListActivity;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 {
@@ -63,7 +60,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         private TextView eventDescriptionTextView;
         private TextView eventDateTextView;
         private NetworkImageView eventImageView;
-        private JSONEventDecorator jsonEventDecorator;
+        private JSONDecorator jsonDecorator;
 
         public ViewHolder(LinearLayout layout)
         {
@@ -82,15 +79,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             eventImageView = (NetworkImageView)layout.findViewById(R.id.rli_event_image);
         }
 
-        public void assignEventData(JSONEventDecorator jsonEventDecorator)
+        public void assignEventData(JSONDecorator jsonDecorator)
         {
             //save the jsoneventdecorator for the onclick handling
-            this.jsonEventDecorator = jsonEventDecorator;
+            this.jsonDecorator = jsonDecorator;
             //assign the data from the json object
-            eventTitleTextView.setText(jsonEventDecorator.getString("title"));
-            eventDescriptionTextView.setText(jsonEventDecorator.getString("description"));
+            eventTitleTextView.setText(jsonDecorator.getString("title"));
+            eventDescriptionTextView.setText(jsonDecorator.getString("description"));
             //grab the time since the epoch from the event
-            Long epoch = Long.parseLong(jsonEventDecorator.getString("date"));
+            Long epoch = Long.parseLong(jsonDecorator.getString("date"));
             //Create a date instance from the epoch
             Date date = new Date(epoch);
             //format and set the date
@@ -98,7 +95,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             //string to store image url
             String imageURL;
             //check to see if event has image associated
-            if(!(imageURL = jsonEventDecorator.getString("thumbnail_url")).equalsIgnoreCase("null"))
+            if(!(imageURL = jsonDecorator.getString("thumbnail_url")).equalsIgnoreCase("null"))
             {
                 //grab image from url
                 eventImageView.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());
@@ -114,7 +111,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         @Override
         public void onClick(View v)
         {
-            eventListActivity.onEventItemSelected(jsonEventDecorator);
+            eventListActivity.onEventItemSelected(jsonDecorator);
         }
     }
 }

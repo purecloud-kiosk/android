@@ -25,8 +25,9 @@ import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Presenter.EventListPresenter;
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Activity.EventListActivity;
+import com.awmdev.purecloudkiosk.View.Interfaces.EventListViewInterface;
 
-public class EventListFragment extends Fragment
+public class EventListFragment extends Fragment implements EventListViewInterface
 {
     private EventListPresenter eventListPresenter;
     private ImageView emptyStateImageView;
@@ -195,7 +196,7 @@ public class EventListFragment extends Fragment
         ((LinearLayoutManager)recyclerView.getLayoutManager()).scrollToPosition(position);
     }
 
-    public class SearchTextWatcher implements TextWatcher
+    private class SearchTextWatcher implements TextWatcher
     {
 
         @Override
@@ -211,7 +212,7 @@ public class EventListFragment extends Fragment
         }
     }
 
-    public class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener
+    private class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener
     {
         private LinearLayoutManager linearLayoutManager;
         private int visibleThreshold;
