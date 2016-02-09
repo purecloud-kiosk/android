@@ -1,8 +1,13 @@
 package com.awmdev.purecloudkiosk.View.Activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -10,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
@@ -18,8 +24,11 @@ import com.awmdev.purecloudkiosk.Presenter.KioskPresenter;
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Interfaces.KioskViewInterface;
 
+import java.util.jar.Manifest;
+
 public class KioskActivity extends AppCompatActivity implements View.OnClickListener,KioskViewInterface
 {
+    private final int requestCode = 100;
     private NetworkImageView eventImage;
     private TextView eventNameTextView;
     private Button checkInButton;
@@ -107,9 +116,65 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v)
     {
-        //navigate to the next activity
-        Intent intent = new Intent(getApplicationContext(),BarcodeActivity.class);
-        startActivity(intent);
+        int hasCameraPermission = ContextCompat.checkSelfPermission(KioskActivity.this, android.Manifest.permission.CAMERA);
+        if(hasCameraPermission != PackageManager.PERMISSION_GRANTED)
+        {
+            if(!ActivityCompat.shouldShowRequestPermissionRationale(KioskActivity.this,android.Manifest.permission.CAMERA))
+            {
+                showRationalDialog("Camera Permissions Are Required For Barcode Scanning To Work," +
+                        " Without These Permission The Scanner Portion Cannot Be Opened", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        ActivityCompat.requestPermissions(KioskActivity.this,
+                                new String[]{android.Manifest.permission.CAMERA}, requestCode);
+                    }
+                });
 
+            }
+            else
+            {
+                ActivityCompat.requestPermissions(KioskActivity.this,
+                        new String[]{android.Manifest.permission.CAMERA}, requestCode);
+            }
+        }
+        else
+        {
+            //navigate to the next activity
+            Intent intent = new Intent(getApplicationContext(), BarcodeActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void showRationalDialog(String message, DialogInterface.OnClickListener buttonListener)
+    {
+        new AlertDialog.Builder(KioskActivity.this)
+                .setMessage(message)
+                .setPositiveButton("OK", buttonListener)
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        if(requestCode == this.requestCode)
+        {
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                //navigate to the next activity
+                Intent intent = new Intent(getApplicationContext(),BarcodeActivity.class);
+                startActivity(intent);
+            }
+            else
+            {
+                //show error toast notifying the user that permission denied prevent scanner
+                Toast.makeText(KioskActivity.this,"Unable to start barcode scanner, permission denied",Toast.LENGTH_LONG).show();
+            }
+        }
+        else
+        {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 }

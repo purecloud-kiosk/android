@@ -16,6 +16,12 @@
         <item name="colorControlHighlight">#FFFFFF</item>
     </style>
 
+    <style name="EditThemeDialogLogin" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorControlNormal">#00e5ff</item>
+        <item name="colorControlActivated">#00e5ff</item>
+        <item name="colorControlHighlight">#00e5ff</item>
+    </style>
+
     <!-- Theme for the back arrow of the toolbar -->
     <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
         <item name="colorControlNormal">@android:color/white</item>

@@ -14,8 +14,8 @@ import org.json.JSONException;
 public class BarcodePresenter
 {
     private final String TAG = BarcodePresenter.class.getSimpleName();
-    private boolean checkInProgress = false;
     private BarcodeViewInterface barcodeViewInterface;
+    private boolean checkInProgress = false;
 
     public BarcodePresenter(BarcodeViewInterface barcodeViewInterface)
     {

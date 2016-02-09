@@ -2,5 +2,9 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="activity_camera_margin">50dp</dimen>
+    <dimen name="activity_camera_margin">20dp</dimen>
+    <dimen name="activity_kiosk_title_size">50sp</dimen>
+    <dimen name="activity_kiosk_button_text_size">30sp</dimen>
+    <dimen name="dialog_text_size">22sp</dimen>
+    <dimen name="dialog_error_size">18sp</dimen>
 </resources>

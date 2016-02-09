@@ -64,7 +64,7 @@ public class LoginVerifier
             {
                 try
                 {
-                    listener.onLoginSuccessful(new JSONDecorator(response));
+                    listener.onLoginSuccessful(new JSONDecorator(response.getJSONObject("res")));
                 }
                 catch(JSONException je)
                 {
@@ -80,7 +80,9 @@ public class LoginVerifier
             public void onErrorResponse(VolleyError error)
             {
                 NetworkResponse networkResponse = error.networkResponse;
-                if(networkResponse != null && networkResponse.statusCode == HttpStatus.SC_FORBIDDEN)
+                //we have to do this because purecloud doesn't format their 401 correctly
+                if((networkResponse != null && networkResponse.statusCode == HttpStatus.SC_UNAUTHORIZED )
+                        || error.getMessage().equalsIgnoreCase("java.io.IOException: No authentication challenges found"))
                 {
                     listener.setError(R.string.login_error_invalid);
                 }

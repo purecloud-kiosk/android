@@ -64,7 +64,7 @@ public class HttpRequester
     public void sendHttpLoginRequest(String email,String password,String organization, Response.Listener<JSONObject> callback,Response.ErrorListener errorCallback)
     {
         //URL for the request
-        String url = "http://charlie-duong.com:8080/purecloud/login";
+        String url = "https://apps.mypurecloud.com/api/v2/login";
         //Create a map for the json request
         Map<String,String> jsonMap = new HashMap<>();
         jsonMap.put("email",email);
