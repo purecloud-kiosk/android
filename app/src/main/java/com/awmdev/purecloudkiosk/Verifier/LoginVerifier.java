@@ -82,7 +82,7 @@ public class LoginVerifier
                 NetworkResponse networkResponse = error.networkResponse;
                 //we have to do this because purecloud doesn't format their 401 correctly
                 if((networkResponse != null && networkResponse.statusCode == HttpStatus.SC_UNAUTHORIZED )
-                        || error.getMessage().equalsIgnoreCase("java.io.IOException: No authentication challenges found"))
+                        || (error.getMessage()!= null && error.getMessage().equalsIgnoreCase("java.io.IOException: No authentication challenges found")))
                 {
                     listener.setError(R.string.login_error_invalid);
                 }

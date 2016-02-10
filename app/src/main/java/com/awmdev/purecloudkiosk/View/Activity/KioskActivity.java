@@ -121,8 +121,7 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
         {
             if(!ActivityCompat.shouldShowRequestPermissionRationale(KioskActivity.this,android.Manifest.permission.CAMERA))
             {
-                showRationalDialog("Camera Permissions Are Required For Barcode Scanning To Work," +
-                        " Without These Permission The Scanner Portion Cannot Be Opened", new DialogInterface.OnClickListener() {
+                showRationalDialog("Camera Permissions Are Required For Barcode Scanner To Scan Barcodes ", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
