@@ -5,12 +5,15 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -98,6 +101,24 @@ public class HttpRequester
         currentSearchRequest = createJsonArrayRequest(url, authKey, callback, errorCallback);
         //send the new request
         requestQueue.add(currentSearchRequest);
+    }
+
+    public void sendEventCheckInRequest(final String authKey, RequestFuture<JSONArray> future, JSONObject checkIn)
+    {
+        //create the url
+        String url = "http://charlie-duong.com:8080/events/checkIn";
+        //create the post request to handle future
+        JsonArrayRequest postRequest = new JsonArrayRequest(Request.Method.POST,url,checkIn,future,future)
+        {
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError
+            {
+                Map<String,String> authHeader = new HashMap<>();
+                authHeader.put("Authorization","bearer "+authKey);
+                return authHeader;
+            }
+        };
+        requestQueue.add(postRequest);
     }
 
     private Request createJsonArrayRequest(final String url, final String authKey, Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback)

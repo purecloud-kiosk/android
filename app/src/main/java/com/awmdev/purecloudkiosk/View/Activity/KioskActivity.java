@@ -1,11 +1,14 @@
 package com.awmdev.purecloudkiosk.View.Activity;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,8 +26,6 @@ import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Presenter.KioskPresenter;
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Interfaces.KioskViewInterface;
-
-import java.util.jar.Manifest;
 
 public class KioskActivity extends AppCompatActivity implements View.OnClickListener,KioskViewInterface
 {
@@ -75,13 +76,53 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus)
+    public void onClick(View v)
     {
-        super.onWindowFocusChanged(hasFocus);
-        if(!hasFocus)
+        int hasCameraPermission = ContextCompat.checkSelfPermission(KioskActivity.this, android.Manifest.permission.CAMERA);
+        if(hasCameraPermission != PackageManager.PERMISSION_GRANTED)
         {
-            //Intent closeWindow = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-            //sendBroadcast(closeWindow);
+            if(ActivityCompat.shouldShowRequestPermissionRationale(KioskActivity.this,android.Manifest.permission.CAMERA))
+            {
+                showRationalDialog("Camera Permission Is Required For The Barcode Scanner To Scan Barcodes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(KioskActivity.this,
+                                new String[]{android.Manifest.permission.CAMERA}, requestCode);
+                    }
+                });
+            }
+            else
+            {
+                ActivityCompat.requestPermissions(KioskActivity.this,
+                        new String[]{android.Manifest.permission.CAMERA}, requestCode);
+            }
+        }
+        else
+        {
+            //navigate to the next activity
+            navigateToCameraActivity();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
+        if(requestCode == this.requestCode)
+        {
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                //navigate to the camera activity
+                navigateToCameraActivity();
+            }
+            else
+            {
+                //show error toast notifying the user that permission denied prevent scanner
+                Toast.makeText(KioskActivity.this,"Unable to start barcode scanner, permission denied",Toast.LENGTH_LONG).show();
+            }
+        }
+        else
+        {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -96,6 +137,14 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
     public void onBackPressed()
     {
         super.onBackPressed();
+    }
+
+    private void navigateToCameraActivity()
+    {
+        //navigate to the next activity
+        Intent intent = new Intent(getApplicationContext(),BarcodeActivity.class);
+        intent.putExtra("parcelable",grabDecoratorFromIntent());
+        startActivity(intent);
     }
 
     public JSONDecorator grabDecoratorFromIntent()
@@ -113,67 +162,13 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
         eventNameTextView.setText(eventName);
     }
 
-    @Override
-    public void onClick(View v)
-    {
-        int hasCameraPermission = ContextCompat.checkSelfPermission(KioskActivity.this, android.Manifest.permission.CAMERA);
-        if(hasCameraPermission != PackageManager.PERMISSION_GRANTED)
-        {
-            if(!ActivityCompat.shouldShowRequestPermissionRationale(KioskActivity.this,android.Manifest.permission.CAMERA))
-            {
-                showRationalDialog("Camera Permissions Are Required For Barcode Scanner To Scan Barcodes ", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        ActivityCompat.requestPermissions(KioskActivity.this,
-                                new String[]{android.Manifest.permission.CAMERA}, requestCode);
-                    }
-                });
-
-            }
-            else
-            {
-                ActivityCompat.requestPermissions(KioskActivity.this,
-                        new String[]{android.Manifest.permission.CAMERA}, requestCode);
-            }
-        }
-        else
-        {
-            //navigate to the next activity
-            Intent intent = new Intent(getApplicationContext(), BarcodeActivity.class);
-            startActivity(intent);
-        }
-    }
-
     private void showRationalDialog(String message, DialogInterface.OnClickListener buttonListener)
     {
-        new AlertDialog.Builder(KioskActivity.this)
+        new AlertDialog.Builder(KioskActivity.this, android.R.style.Theme_Material_Light_Dialog_Alert)
                 .setMessage(message)
                 .setPositiveButton("OK", buttonListener)
                 .create()
                 .show();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-    {
-        if(requestCode == this.requestCode)
-        {
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
-                //navigate to the next activity
-                Intent intent = new Intent(getApplicationContext(),BarcodeActivity.class);
-                startActivity(intent);
-            }
-            else
-            {
-                //show error toast notifying the user that permission denied prevent scanner
-                Toast.makeText(KioskActivity.this,"Unable to start barcode scanner, permission denied",Toast.LENGTH_LONG).show();
-            }
-        }
-        else
-        {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
 }

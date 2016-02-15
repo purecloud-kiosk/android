@@ -106,7 +106,7 @@ public class LoginDialogFragment extends DialogFragment implements OnShowListene
     @Override
     public void onLoginSuccessful(JSONDecorator jsonDecorator)
     {
-        barcodePresenter.onCheckInSuccessful();
+        barcodePresenter.onCheckInSuccessful(jsonDecorator);
     }
 
     @Override

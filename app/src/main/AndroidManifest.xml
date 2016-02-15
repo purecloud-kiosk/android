@@ -37,8 +37,9 @@
         <activity
             android:name=".View.Activity.BarcodeActivity"
             android:theme="@style/BarcodeTheme">
-
         </activity>
+
+        <service android:name=".Services.CheckInService" android:enabled="true"/>
 
     </application>
 

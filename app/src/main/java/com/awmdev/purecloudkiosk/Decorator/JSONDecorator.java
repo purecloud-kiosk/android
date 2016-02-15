@@ -8,6 +8,10 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 
 public class JSONDecorator extends JSONObject implements Parcelable
 {
@@ -36,6 +40,22 @@ public class JSONDecorator extends JSONObject implements Parcelable
             //improperly formatted json, return null
             return null;
         }
+    }
+
+    public Map<String,Object> getMap()
+    {
+        //create the map
+        Map<String,Object> map = new HashMap<>();
+        //iterate through the keys to create the map
+        for(Iterator<String> it = keys(); it.hasNext();)
+        {
+            //save the key locally
+            String key = it.next();
+            //add it to the map
+            map.put(key,getString(key));
+        }
+        //return the map
+        return map;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.awmdev.purecloudkiosk.View.Fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,8 +51,10 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         {
             //create a new instance of the model
             eventListModel = new EventListModel();
-            //grab the authentication token from the activity and set it
-            eventListModel.setAuthenticationToken(getActivity().getIntent().getExtras().getString("authenticationToken"));
+            //grab the shared preferences
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("authenticationPreference", Context.MODE_PRIVATE);
+            //grab the authentication token from the preference and set it
+            eventListModel.setAuthenticationToken(sharedPreferences.getString("authenticationToken",""));
         }
         //Create the presenter
         eventListPresenter = new EventListPresenter(this,eventListModel);
@@ -95,7 +98,7 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         super.onSaveInstanceState(outState);
         //write the model to the bundle
         outState.putParcelable("parcelable",eventListModel);
-        //grab the searchview from the menu
+        //grab the search view from the menu
         MenuItem searchViewMenuItem = fragmentMenu.findItem(R.id.menu_action_search);
         //write the current state of the menu
         outState.putBoolean("actionMenuExpanded", searchViewMenuItem.isActionViewExpanded());
@@ -104,7 +107,7 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         //grab the string from the edit text and store it in the bundle
         outState.putString("searchBoxValue", editText.getText().toString());
         //save the state of the splash icon
-        outState.putBoolean("splashState",emptyStateImageView.getVisibility() == View.VISIBLE);
+        outState.putBoolean("splashState", emptyStateImageView.getVisibility() == View.VISIBLE);
     }
 
     @Override
@@ -184,16 +187,6 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
             emptyStateImageView.setVisibility(View.VISIBLE);
         else
             emptyStateImageView.setVisibility(View.GONE);
-    }
-
-    public int getAdapterViewPosition()
-    {
-        return ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-    }
-
-    public void setAdapterViewPosition(int position)
-    {
-        ((LinearLayoutManager)recyclerView.getLayoutManager()).scrollToPosition(position);
     }
 
     private class SearchTextWatcher implements TextWatcher
