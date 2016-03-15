@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PureCloudKiosk</string>
+    <string name="app_name">PureCloud Kiosk</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
     <string name="login_button">Login</string>
@@ -10,14 +10,17 @@
     <string name="login_error_missing_fields">You Must Specify A Username And Password Before Logging In</string>
     <string name="login_error_missing_organization">You Must Specify A Organization</string>
     <string name="login_error_server_timeout">Unable To Login Into PureCloud Servers, Try Again Later</string>
-    <string name="date">Date </string>
-    <string name="location">Location </string>
-    <string name="description">Description </string>
-    <string name="privacy">Privacy </string>
+    <string name="date">Date</string>
+    <string name="location">Location</string>
+    <string name="description">Description</string>
+    <string name="privacy">Privacy</string>
     <string name="search">Search</string>
     <string name="check_in">Check In</string>
     <string name="launch_kiosk">Launch Kiosk</string>
     <string name="title">Event Name</string>
     <string name="organization">Organization</string>
     <string name="not_now">Not Now</string>
+    <string name="notification_processing">Processing Check Ins</string>
+    <string name="notification_waiting_internet">Waiting For Internet</string>
+    <string name="notification_waiting_data">Waiting For Check Ins</string>
 </resources>

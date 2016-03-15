@@ -8,13 +8,13 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -74,10 +74,11 @@ public class BarcodeActivity extends AppCompatActivity implements View.OnClickLi
         //register the camera source with the view
         createCameraSource();
         //grab an instance of the button and set the onclick listener
-        Button button = (Button) findViewById(R.id.activity_barcode_button);
+        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.activity_barcode_button);
         button.setOnClickListener(this);
         //start the service, before binding to prevent it closing on unBind
         Intent intent = new Intent(getApplicationContext(),CheckInService.class);
+        intent.putExtra("broadcast",false);
         startService(intent);
         bindService(intent,this,Context.BIND_AUTO_CREATE);
     }
@@ -129,7 +130,6 @@ public class BarcodeActivity extends AppCompatActivity implements View.OnClickLi
         CheckInService.CheckInBinder checkInBinder = (CheckInService.CheckInBinder)service;
         //grab the service from the binder
         checkInService = checkInBinder.getService();
-        Log.d(TAG,"Service Bound");
     }
 
     @Override
@@ -137,7 +137,6 @@ public class BarcodeActivity extends AppCompatActivity implements View.OnClickLi
     {
         //connection from the service has been lost, set the service to null
         checkInService = null;
-        Log.d(TAG,"Service Unbound");
     }
 
     @Override

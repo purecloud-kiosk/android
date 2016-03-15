@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="primaryTextColor">#212121</color>
     <color name="errorTextColor">#c8dd2c00</color>
+    <color name="notificationColor">#257695</color>
 </resources>

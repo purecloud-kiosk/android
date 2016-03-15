@@ -2,6 +2,7 @@ package com.awmdev.purecloudkiosk.Model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.LruCache;
 
 import com.android.volley.AuthFailureError;
@@ -30,6 +31,7 @@ import java.util.Map;
 
 public class HttpRequester
 {
+    private final String TAG = HttpRequester.class.getSimpleName();
     private static HttpRequester httpRequester;
     private Request currentSearchRequest;
     private RequestQueue requestQueue;
@@ -103,12 +105,12 @@ public class HttpRequester
         requestQueue.add(currentSearchRequest);
     }
 
-    public void sendEventCheckInRequest(final String authKey, RequestFuture<JSONArray> future, JSONObject checkIn)
+    public void sendEventCheckInRequest(final String authKey, RequestFuture<JSONObject> future, JSONObject checkIn)
     {
         //create the url
         String url = "http://charlie-duong.com:8080/events/checkIn";
         //create the post request to handle future
-        JsonArrayRequest postRequest = new JsonArrayRequest(Request.Method.POST,url,checkIn,future,future)
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST,url,checkIn,future,future)
         {
             @Override
             public Map<String,String> getHeaders() throws AuthFailureError
@@ -122,7 +124,7 @@ public class HttpRequester
     }
 
     private Request createJsonArrayRequest(final String url, final String authKey, Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback)
-    {
+        {
         //add the auth token to the header
         JsonArrayRequest getRequest = new JsonArrayRequest(Request.Method.GET,url,callback,errorCallback)
         {

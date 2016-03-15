@@ -1,76 +1,81 @@
 package com.awmdev.purecloudkiosk.Services;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.IntentFilter;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Icon;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
-import com.android.volley.toolbox.RequestFuture;
-import com.awmdev.purecloudkiosk.Model.HttpRequester;
-import com.couchbase.lite.CouchbaseLiteException;
-import com.couchbase.lite.Database;
-import com.couchbase.lite.Document;
-import com.couchbase.lite.Emitter;
-import com.couchbase.lite.Manager;
-import com.couchbase.lite.Mapper;
-import com.couchbase.lite.Query;
-import com.couchbase.lite.QueryEnumerator;
-import com.couchbase.lite.QueryRow;
-import com.couchbase.lite.View;
-import com.couchbase.lite.android.AndroidContext;
+import com.awmdev.purecloudkiosk.R;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-public class CheckInService extends Service
+public class CheckInService extends Service implements CheckInRunnableListener
 {
-    private BlockingQueue<Map<String,Object>> checkInQueue = new ArrayBlockingQueue(30,true);
+    //variables
     private static final String TAG = CheckInService.class.getSimpleName();
+    private InternetReceiver internetReceiver = new InternetReceiver();
     private CheckInBinder checkInBinder = new CheckInBinder();
-    private boolean serviceBound = true;
-    private Database database;
-    private String authKey;
+    private NotificationManager notificationManager;
+    private final int ONGOING_NOTIFICATION_ID = 1;
+    private CheckInRunnable checkInRunnable;
+    private boolean bounded = false;
+    private Thread checkInThread;
 
     @Override
     public void onCreate()
     {
-        try
+        //create the runnable
+        checkInRunnable = new CheckInRunnable(this);
+        //add the listener to the runnable
+        checkInRunnable.addRunnableFinishedListener(this);
+        //create the thread
+        checkInThread = new Thread(checkInRunnable);
+        //grab the notification manager
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        //start the service in the foreground
+        startForeground(ONGOING_NOTIFICATION_ID,buildNotification(R.string.notification_waiting_data));
+        //create the broadcast receiver
+        registerReceiver(internetReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
+        //check to see if the broadcast receiver started the service
+        if(intent.getExtras().getBoolean("broadcast"))
         {
-            Manager manager = new Manager(new AndroidContext(getApplicationContext()), Manager.DEFAULT_OPTIONS);
-            //grab the database
-            database = manager.getDatabase("check_in_database");
-            //create the thread pool for the producer and consumer
-            ExecutorService threadPool = Executors.newFixedThreadPool(2);
-            threadPool.submit(new CheckInProducer());
-            threadPool.submit(new CheckInConsumer());
-            //grab the authentication token from the preference
-            SharedPreferences sharedPreferences = getSharedPreferences("authenticationPreference", Context.MODE_PRIVATE);
-            authKey = sharedPreferences.getString("authenticationToken","");
+            if(checkInThread.getState() == Thread.State.TERMINATED || !checkInThread.isAlive())
+            {
+                checkInThread = new Thread(checkInRunnable);
+                checkInThread.start();
+            }
         }
-        catch(IOException | CouchbaseLiteException e)
-        {
-            Log.e(TAG, "Unable to create instance of CouchLite Database,service stopping");
-            stopSelf();
-        }
+        return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent)
     {
+        //set the bounded status to true
+        checkInRunnable.updateBoundedStatus(true);
+        //set the local bounded variable to true
+        bounded = true;
+        //start the thread
+        if(!checkInThread.isAlive())
+        {
+            checkInThread = new Thread(checkInRunnable);
+            checkInThread.start();
+        }
         //return the binder
         return checkInBinder;
     }
@@ -78,133 +83,91 @@ public class CheckInService extends Service
     @Override
     public boolean onUnbind(Intent intent)
     {
-        return super.onUnbind(intent);
+        //updated the bounded status on the thread
+        checkInRunnable.updateBoundedStatus(false);
+        //set bounded to false as the service is no longer attached
+        bounded = false;
+        //return true so rebind will be called
+        return true;
+    }
+
+    @Override
+    public void onRebind(Intent intent)
+    {
+        //set the local bounded variable to true
+        bounded = true;
+        //update the bounded status
+        checkInRunnable.updateBoundedStatus(true);
+        //check to see if the thread needs to be restarted
+        if(!checkInThread.isAlive())
+        {
+            checkInThread = new Thread(checkInRunnable);
+            checkInThread.start();
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        unregisterReceiver(internetReceiver);
+        super.onDestroy();
+    }
+
+    @Override
+    public void onRunnableFinished()
+    {
+        //just make sure someone didn't connect as were finishing the runnable
+        if(!bounded)
+            //stop the service
+            stopSelf();
+    }
+
+    @Override
+    public void onStateChange(int stringID)
+    {
+        Notification notification = buildNotification(stringID);
+        notificationManager.notify(ONGOING_NOTIFICATION_ID,notification);
     }
 
     public void postCheckIn(Map<String,Object> checkInMap)
     {
         //add the check in to the queue for the producer to add to the database
-        try
-        {
-            checkInQueue.put(checkInMap);
-        }
-        catch(InterruptedException ex)
-        {
-            Log.e(TAG,"Unable to add check in to queue for processing");
-        }
+        checkInRunnable.postCheckIn(checkInMap);
+    }
 
+    public Notification buildNotification(int stringID)
+    {
+        Notification.Builder notificationBuilder = new Notification.Builder(this);
+        notificationBuilder.setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle(getResources().getString(R.string.app_name))
+                .setContentInfo(getResources().getString(stringID));
+        return notificationBuilder.build();
     }
 
     public class CheckInBinder extends Binder
     {
         public CheckInService getService()
         {
+            //return the current instance of this service
             return CheckInService.this;
         }
     }
 
-    private class CheckInConsumer implements Runnable
+    private class InternetReceiver extends BroadcastReceiver
     {
-        private final String TAG = CheckInConsumer.class.getSimpleName();
-
         @Override
-        public void run()
+        public void onReceive(Context context, Intent intent)
         {
-            //grab an instance of the http requester
-            HttpRequester httpRequester = HttpRequester.getInstance(null);
-            //grab the view from the database
-            View checkInView = database.getView("check_in_view");
-            //create the mapper for the view
-            checkInView.setMap(new Mapper()
-            {
-                @Override
-                public void map(Map<String, Object> document, Emitter emitter)
-                {
-                    //we want to emit all documents and all of their content
-                    emitter.emit("checkIn", document);
-                }
-            }, "1.0");
-            //create the query for the navigating the results
-            Query query = checkInView.createQuery();
-            //save the old result for comparison
-            QueryEnumerator oldResult = null;
-            //loop until the view is empty and the service is not longer bound
-            while (serviceBound || checkInView.getCurrentTotalRows() > 0)
-            {
-                try
-                {
-                    //check if the old result is stale
-                    if (oldResult == null || oldResult.isStale())
-                    {
-                        //rerun the query
-                        QueryEnumerator newResult = query.run();
-                        //if the result actually isn't stale, then grab the results
-                        if (!oldResult.equals(newResult))
-                        {
-                            //save the new result for comparison
-                            oldResult = newResult;
-                            //iterate through the results
-                            for (Iterator<QueryRow> it = newResult; it.hasNext();)
-                            {
-                                //grab the result from the iterator
-                                QueryRow row = it.next();
-                                //create the future for the request
-                                RequestFuture<JSONArray> future = RequestFuture.newFuture();
-                                //create the json object from the map
-                                JSONObject jsonObject = new JSONObject(row.asJSONDictionary());
-                                //send the request
-                                httpRequester.sendEventCheckInRequest(authKey,future,jsonObject);
-                                //wait for the response
-                                JSONArray jsonArray = future.get(30, TimeUnit.SECONDS);
-                                //print the response
-                                Log.d(TAG,jsonArray.toString());
-                            }
-                        }
-                    }
-                }
-                catch(CouchbaseLiteException cble)
-                {
-                    Log.e(TAG,"Unable to run query for result, exception follows: " + cble.getMessage());
-                }
-                catch(InterruptedException | ExecutionException ex)
-                {
-                    Log.e(TAG,"Error in handling future response, exception follows: "+ ex.getMessage());
-                }
-                catch(TimeoutException te)
-                {
-                    Log.e(TAG,"Timeout occurred when waiting for response");
-                    //set the old result to null to allow searching for the same results again
-                    oldResult = null;
-                }
-            }
+            //grab the connectivity service to see if we have a connection
+            ConnectivityManager connectivityManager = (ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+            //check the connection status
+            if(activeNetwork != null && activeNetwork.isConnectedOrConnecting())
+                checkInRunnable.updateConnectivityState(true);
+            else
+                checkInRunnable.updateConnectivityState(false);
         }
     }
 
-    private class CheckInProducer implements Runnable
-    {
-        private final String TAG = CheckInProducer.class.getSimpleName();
-
-        @Override
-        public void run()
-        {
-            while(serviceBound || !checkInQueue.isEmpty())
-            {
-                try
-                {
-                    //grab the check in from the queue
-                    Map<String, Object> docContent = checkInQueue.take();
-                    Log.d(TAG,"Grabbing document: "+docContent);
-                    //create an empty document
-                    Document document = database.createDocument();
-                    //place our content into the document
-                    document.putProperties(docContent);
-                }
-                catch(CouchbaseLiteException | InterruptedException ex)
-                {
-                    Log.e(TAG,"Unable to put check in into database");
-                }
-            }
-        }
-
-    }
 }

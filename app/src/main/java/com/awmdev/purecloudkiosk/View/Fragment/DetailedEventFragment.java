@@ -116,7 +116,14 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
 
     private JSONDecorator getDecoratorFromIntent()
     {
-        return (JSONDecorator) getActivity().getIntent().getExtras().getParcelable("parcelable");
+        try
+        {
+            return (JSONDecorator) getActivity().getIntent().getExtras().getParcelable("parcelable");
+        }
+        catch(NullPointerException npe)
+        {
+            return null;
+        }
     }
 
     public void assignTextView(int selection, String textSelection)
