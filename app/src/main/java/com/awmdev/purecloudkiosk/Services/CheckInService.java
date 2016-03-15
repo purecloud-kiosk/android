@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
@@ -141,6 +142,8 @@ public class CheckInService extends Service implements CheckInRunnableListener
         notificationBuilder.setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(getResources().getString(R.string.app_name))
                 .setContentInfo(getResources().getString(stringID));
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+            notificationBuilder.setColor(getResources().getColor(R.color.notificationColor));
         return notificationBuilder.build();
     }
 
