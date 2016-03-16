@@ -81,6 +81,10 @@ public class EventListPresenter
             @Override
             public void onErrorResponse(VolleyError error)
             {
+                //check to see if the state is empty and produce the required view
+                if(eventListModel.getEventListDataSize() == 0)
+                    eventListViewInterface.setEmptyStateViewVisibility(true);
+                //log the error
                 Log.d(tag, "Unable to reach server, volley error follow: " + error);
             }
         };

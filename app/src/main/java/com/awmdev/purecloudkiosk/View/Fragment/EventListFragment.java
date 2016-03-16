@@ -22,6 +22,7 @@ import com.awmdev.purecloudkiosk.Adapter.EventAdapter;
 import com.awmdev.purecloudkiosk.Decorator.RecyclerListSeparator;
 import com.awmdev.purecloudkiosk.Decorator.VerticalSpacingDecorator;
 import com.awmdev.purecloudkiosk.Model.EventListModel;
+import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.Presenter.EventListPresenter;
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Activity.EventListActivity;
@@ -43,7 +44,7 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
     {
         //Call the super class
         super.onCreate(savedInstanceState);
-        //check to see if the bundle is null, if not null restore the bundle else create a new one
+        //check to see if the bundle is null, if not null restore the model else create a new one
         if(savedInstanceState != null)
             eventListModel = (EventListModel)savedInstanceState.getParcelable("parcelable");
         else
@@ -57,6 +58,8 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         }
         //Create the presenter
         eventListPresenter = new EventListPresenter(this,eventListModel);
+        //create the http requester
+        HttpRequester.getInstance(getActivity().getApplicationContext());
         //temporally save the bundle to restore the menu state
         this.savedInstanceState = savedInstanceState;
     }

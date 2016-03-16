@@ -28,6 +28,8 @@ public class LoginActivity extends AppCompatActivity
         SharedPreferences sharedPreferences = getSharedPreferences("authenticationPreference",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("authenticationToken",authenticationKey);
+        editor.putLong("authenticationTimeStamp",System.currentTimeMillis());
+        editor.putBoolean("authenticationTokenSaved",true);
         editor.apply();
         //switch to the next activity
         Intent intent = new Intent(getApplicationContext(),EventListActivity.class);
