@@ -1,16 +1,21 @@
 package com.awmdev.purecloudkiosk.View.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Interfaces.LaunchKioskInterface;
 
-public class DetailedEventActivity extends AppCompatActivity implements View.OnClickListener, LaunchKioskInterface
+public class DetailedEventActivity extends LogoutMenuActivity implements View.OnClickListener, LaunchKioskInterface
 {
     @Override
     public void onCreate(Bundle savedInstanceState)
