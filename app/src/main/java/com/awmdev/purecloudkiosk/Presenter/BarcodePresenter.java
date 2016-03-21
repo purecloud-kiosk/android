@@ -77,7 +77,7 @@ public class BarcodePresenter
         //create a map to store the check-in
         Map<String, Object> map = new HashMap<>();
         //add the event id
-        map.put("eventID",barcodeModel.getStringFromDecorator("_id"));
+        map.put("eventID",barcodeModel.getStringFromDecorator("id"));
         //grab the json map from checkInDecorator
         Map<String,Object> checkInMap = jsonCheckInDecorator.getMap();
         //update the check in time for the check in

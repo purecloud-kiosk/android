@@ -11,8 +11,9 @@ public interface DetailedEventViewInterface
 {
     //int to store the selection for the textviews
     int EVENT_NAME = 0;
-    int DATE = EVENT_NAME + 1;
-    int DESCRIPTION = DATE + 1;
+    int START_DATE = EVENT_NAME + 1;
+    int END_DATE = START_DATE + 1;
+    int DESCRIPTION = END_DATE + 1;
     int LOCATION = DESCRIPTION + 1;
     int PRIVACY = LOCATION + 1;
     //methods

@@ -34,7 +34,8 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
     private ScrollView scrollView;
     private TextView eventPrivacy;
     private TextView eventName;
-    private TextView eventDate;
+    private TextView eventStartDate;
+    private TextView eventEndDate;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -58,8 +59,10 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
         eventPrivacy = (TextView)relativeLayout.findViewById(R.id.fdevent_privacy);
         //grab the event location textview
         eventLocation = (TextView)relativeLayout.findViewById(R.id.fdevent_location);
-        //grab the location textview
-        eventDate = (TextView)relativeLayout.findViewById(R.id.fdevent_date);
+        //grab the startDate textview
+        eventStartDate = (TextView)relativeLayout.findViewById(R.id.fdevent_start_date);
+        // grab the endDate textView
+        eventEndDate = (TextView)relativeLayout.findViewById(R.id.fdevent_end_date);
         //grab the description of the event
         eventDescription = (TextView)relativeLayout.findViewById(R.id.fdevent_description);
         //grab the network image view banner
@@ -142,8 +145,11 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
             case LOCATION:
                 textView = eventLocation;
                 break;
-            case DATE:
-                textView = eventDate;
+            case START_DATE:
+                textView = eventStartDate;
+                break;
+            case END_DATE:
+                textView = eventEndDate;
                 break;
             case DESCRIPTION:
                 textView = eventDescription;

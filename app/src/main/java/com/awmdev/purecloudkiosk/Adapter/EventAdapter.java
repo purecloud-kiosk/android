@@ -87,7 +87,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             eventTitleTextView.setText(jsonDecorator.getString("title"));
             eventDescriptionTextView.setText(jsonDecorator.getString("description"));
             //grab the time since the epoch from the event
-            Long epoch = Long.parseLong(jsonDecorator.getString("date"));
+            Long epoch = Long.parseLong(jsonDecorator.getString("startDate"));
             //Create a date instance from the epoch
             Date date = new Date(epoch);
             //format and set the date
@@ -95,7 +95,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             //string to store image url
             String imageURL;
             //check to see if event has image associated
-            if(!(imageURL = jsonDecorator.getString("thumbnail_url")).equalsIgnoreCase("null"))
+            if(!(imageURL = jsonDecorator.getString("thumbnailUrl")).equalsIgnoreCase("null"))
             {
                 //grab image from url
                 eventImageView.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());

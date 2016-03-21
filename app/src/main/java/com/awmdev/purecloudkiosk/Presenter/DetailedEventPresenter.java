@@ -31,16 +31,21 @@ public class DetailedEventPresenter
         detailedEventViewInterface.assignTextView(detailedEventViewInterface.EVENT_NAME, jsonDecorator.getString("title"));
         detailedEventViewInterface.assignTextView(detailedEventViewInterface.LOCATION, jsonDecorator.getString("location"));
         //grab the date in the form of the epoch
-        Long epoch = Long.parseLong(jsonDecorator.getString("date"));
+        Long epochStart = Long.parseLong(jsonDecorator.getString("startDate"));
+        Long epochEnd = Long.parseLong(jsonDecorator.getString("endDate"));
         //create a instance of date from the epoch
-        Date date = new Date(epoch);
+        Date startDate = new Date(epochStart);
         //set the date using simple date format
-        detailedEventViewInterface.assignTextView(detailedEventViewInterface.DATE,new SimpleDateFormat("hh:mm a 'on' MM-dd-yyyy").format(date));
+        detailedEventViewInterface.assignTextView(detailedEventViewInterface.START_DATE,new SimpleDateFormat("hh:mm a 'on' MM-dd-yyyy").format(startDate));
+        //create a instance of date from the epoch
+        Date endDate = new Date(epochEnd);
+        //set the date using simple date format
+        detailedEventViewInterface.assignTextView(detailedEventViewInterface.END_DATE,new SimpleDateFormat("hh:mm a 'on' MM-dd-yyyy").format(endDate));
         //set the image view
         //string to store image url
         String imageURL;
         //check to see if event has image associated
-        if(!(imageURL = jsonDecorator.getString("image_url")).equalsIgnoreCase("null"))
+        if(!(imageURL = jsonDecorator.getString("imageUrl")).equalsIgnoreCase("null"))
         {
             //grab image from url
             detailedEventViewInterface.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());

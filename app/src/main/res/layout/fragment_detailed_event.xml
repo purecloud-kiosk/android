@@ -105,12 +105,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimary"
-                    android:text="@string/date"
+                    android:text="@string/start_date"
                     android:padding="4dp"
                     android:textSize="22sp"/>
 
                 <TextView
-                    android:id="@+id/fdevent_date"
+                    android:id="@+id/fdevent_start_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="16sp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:text="@string/end_date"
+                    android:padding="4dp"
+                    android:textSize="22sp"/>
+
+                <TextView
+                    android:id="@+id/fdevent_end_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimaryDark"
