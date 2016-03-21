@@ -17,9 +17,21 @@ check in users in their organization.
       git clone https://github.com/areese159/PureCloud-Kiosk-Android.git
     ```
     
-    * Start Android Studio
-      ![Android Studio Welcome Screen] (/screenshots/android_welcome.png)
+    * Start Android Studio and select import project
+    
+      ![Welcome Screen](/screenshots/android_welcome.PNG)
+    
+    * Navigate to the project folder and select the root directory
+    
+    ![Import Screen](/screenshots/android_import.png)
     
     
   * Clone Github Repository From Android Studio
   
+    * Start Android Studio and Select Checkout Project and Choose Github
+    
+      ![Welcome Screen](/screenshots/android_welcome.PNG)
+   
+   * Enter GitHub Repo Link and Select Project Location To Be Clones
+   
+      ![Clone Screen](/screenshots/android_clone.PNG)
