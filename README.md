@@ -5,7 +5,7 @@ check in users in their organization.
 ###Requirements
 
 * [Android Studio](http://developer.android.com/sdk/index.html)
-* Android phone : Android API 19+
+* Android Phone : Android API 19+
 * [PureCloud Collaborate Account] (https://mypurecloud.com/)
 
 ###Installation
