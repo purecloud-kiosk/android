@@ -77,7 +77,4 @@ public class EventListActivity extends LogoutMenuActivity implements LaunchKiosk
             startActivity(intent);
         }
     }
-
-
-
 }

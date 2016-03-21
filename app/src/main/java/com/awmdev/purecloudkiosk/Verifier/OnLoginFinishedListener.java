@@ -1,4 +1,4 @@
-package com.awmdev.purecloudkiosk.View.Interfaces;
+package com.awmdev.purecloudkiosk.Verifier;
 
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 

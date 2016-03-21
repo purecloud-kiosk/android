@@ -16,8 +16,7 @@ import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Presenter.BarcodePresenter;
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.Verifier.LoginVerifier;
-import com.awmdev.purecloudkiosk.View.Interfaces.OnLoginFinishedListener;
-import com.google.android.gms.vision.barcode.Barcode;
+import com.awmdev.purecloudkiosk.Verifier.OnLoginFinishedListener;
 
 /**
  * Created by Reese on 2/8/2016.

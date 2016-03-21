@@ -2,7 +2,7 @@ package com.awmdev.purecloudkiosk.Presenter;
 
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.View.Interfaces.LoginViewInterface;
-import com.awmdev.purecloudkiosk.View.Interfaces.OnLoginFinishedListener;
+import com.awmdev.purecloudkiosk.Verifier.OnLoginFinishedListener;
 import com.awmdev.purecloudkiosk.Verifier.LoginVerifier;
 
 public class LoginPresenter implements OnLoginFinishedListener

@@ -43,6 +43,8 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
         super.onCreate(savedInstanceState);
         //create the presenter
         detailedEventPresenter = new DetailedEventPresenter(this);
+        //set the option menu to true
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -68,8 +70,6 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
         scrollView = (ScrollView)relativeLayout.findViewById(R.id.fdevent_main_layout);
         //populate the view with the passed bundle
         assignDataToView(getDecoratorFromIntent());
-        //set the option menu to true
-        setHasOptionsMenu(true);
         //return the inflated view
         return relativeLayout;
     }

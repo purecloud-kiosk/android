@@ -8,7 +8,6 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
-import com.awmdev.purecloudkiosk.View.Interfaces.OnLoginFinishedListener;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.R;
 

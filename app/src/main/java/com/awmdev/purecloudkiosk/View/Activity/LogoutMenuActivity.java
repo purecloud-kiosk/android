@@ -23,26 +23,19 @@ public class LogoutMenuActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public void onLogoutSelected(MenuItem item)
     {
-        if(item.getItemId() == R.menu.log_out_menu)
-        {
-            //remove the old token
-            SharedPreferences sharedPreferences = getSharedPreferences("authenticationPreference", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("authenticationTokenSaved",false);
-            editor.apply();
-            //create the intent
-            Intent intent = new Intent(getApplicationContext(),LauncherActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            //start the activity
-            startActivity(intent);
-            //finish the current activity
-            finish();
-            //return true since we handled this action
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        //remove the old token
+        SharedPreferences sharedPreferences = getSharedPreferences("authenticationPreference", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("authenticationTokenSaved",false);
+        editor.apply();
+        //create the intent
+        Intent intent = new Intent(getApplicationContext(),LauncherActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        //start the activity
+        startActivity(intent);
+        //finish the current activity
+        finish();
     }
 }

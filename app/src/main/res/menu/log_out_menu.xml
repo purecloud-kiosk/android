@@ -7,5 +7,6 @@
     <item
         android:id="@+id/log_out_menu_item"
         android:title="@string/menu_logout"
+        android:onClick="onLogoutSelected"
         app:showAsAction="never"/>
 </menu>

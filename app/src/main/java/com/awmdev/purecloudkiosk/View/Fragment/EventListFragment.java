@@ -44,6 +44,8 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
     {
         //Call the super class
         super.onCreate(savedInstanceState);
+        //set that the fragment has a options menu
+        setHasOptionsMenu(true);
         //check to see if the bundle is null, if not null restore the model else create a new one
         if(savedInstanceState != null)
             eventListModel = (EventListModel)savedInstanceState.getParcelable("parcelable");
@@ -87,8 +89,6 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
             eventListPresenter.getEventListData();
         //add the adapter to the recycler
         recyclerView.setAdapter(eventAdapter);
-        //set that the fragment has a options menu
-        setHasOptionsMenu(true);
         //return the layout
         return layout;
     }
