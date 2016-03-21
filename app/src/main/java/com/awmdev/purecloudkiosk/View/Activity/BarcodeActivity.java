@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
@@ -154,10 +155,18 @@ public class BarcodeActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void run()
             {
+                //create the dialog
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 BarcodeDialogFragment barcodeDialogFragment = new BarcodeDialogFragment();
                 barcodeDialogFragment.setResources(imageLoader,jsonDecorator);
+                //create the media file
+                MediaPlayer mediaPlayer = MediaPlayer.create(getApplication().getApplicationContext(),R.raw.check_in_sound);
+                //display the fragment
                 barcodeDialogFragment.show(fragmentManager,"BarcodeDialog");
+                //play the sound
+                mediaPlayer.start();
+                //release the media player
+                mediaPlayer.release();
             }
         });
     }
@@ -165,10 +174,12 @@ public class BarcodeActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void displayLogInDialog()
     {
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
         loginDialogFragment.setBarcodePresenter(barcodePresenter);
         loginDialogFragment.show(fragmentManager, "LoginDialog");
+
     }
 
     public JSONDecorator grabDecoratorFromIntent()
