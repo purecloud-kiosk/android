@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -28,9 +29,10 @@ import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Activity.EventListActivity;
 import com.awmdev.purecloudkiosk.View.Interfaces.EventListViewInterface;
 
-public class EventListFragment extends Fragment implements EventListViewInterface
+public class EventListFragment extends Fragment implements EventListViewInterface, SwipeRefreshLayout.OnRefreshListener
 {
     private EventListPresenter eventListPresenter;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView emptyStateImageView;
     private EventListModel eventListModel;
     private EventAdapter eventAdapter;
@@ -75,6 +77,12 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         recyclerView = (RecyclerView)layout.findViewById(R.id.feventlist_recycler_view);
         //grab the image view from the layout
         emptyStateImageView = (ImageView)layout.findViewById(R.id.feventlist_imageview);
+        //grab the refresh container from the layout
+        swipeRefreshLayout = (SwipeRefreshLayout)layout.findViewById(R.id.feventlist_refresh_view);
+        //set the refresh listener
+        swipeRefreshLayout.setOnRefreshListener(this);
+        //set the color for the spinner
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         //assign the layout to the recycler
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //assign the decorator to the recycler
@@ -86,7 +94,7 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         eventAdapter = new EventAdapter(eventListModel,(EventListActivity)getActivity());
         //if the bundle is null, request data from the presenter
         if(savedInstanceState == null)
-            eventListPresenter.getEventListData();
+            eventListPresenter.sendEventDataRequest();
         //add the adapter to the recycler
         recyclerView.setAdapter(eventAdapter);
         //return the layout
@@ -99,15 +107,11 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         //pass the bundle to the super class
         super.onSaveInstanceState(outState);
         //write the model to the bundle
-        outState.putParcelable("parcelable",eventListModel);
+        outState.putParcelable("parcelable", eventListModel);
         //grab the search view from the menu
         MenuItem searchViewMenuItem = fragmentMenu.findItem(R.id.menu_action_search);
         //write the current state of the menu
         outState.putBoolean("actionMenuExpanded", searchViewMenuItem.isActionViewExpanded());
-        //grab the edit text from the search box
-        EditText editText = (EditText)searchViewMenuItem.getActionView().findViewById(R.id.search_edit_text);
-        //grab the string from the edit text and store it in the bundle
-        outState.putString("searchBoxValue", editText.getText().toString());
         //save the state of the splash icon
         outState.putBoolean("splashState", emptyStateImageView.getVisibility() == View.VISIBLE);
     }
@@ -141,10 +145,15 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         //grab the layout for the edit text
         RelativeLayout layout = (RelativeLayout) menuItem.getActionView();
         EditText editText = (EditText) layout.findViewById(R.id.search_edit_text);
-        //restore the menu state before adding the text change listener to prevent duplicate searches
-        restoreMenuState();
+        //restore the edit text state
+        editText.setText(eventListModel.getCurrentSearchPattern());
         //Add the text watcher to the edit text
         editText.addTextChangedListener(new SearchTextWatcher());
+        //expanded the action menu if needed
+        if(savedInstanceState != null && savedInstanceState.getBoolean("actionMenuExpanded",false))
+                menuItem.expandActionView();
+        //release the memory for the bundle
+        savedInstanceState = null;
         //call the super class
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -158,23 +167,10 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         eventListPresenter.onDestroy();
     }
 
-    private void restoreMenuState()
+    @Override
+    public void onRefresh()
     {
-        //check to see if the bundle is null
-        if(savedInstanceState != null)
-        {
-            //grab the search view from the menu
-            MenuItem searchViewMenuItem = fragmentMenu.findItem(R.id.menu_action_search);
-            //grab the edit text from the search view
-            EditText editText = (EditText) searchViewMenuItem.getActionView().findViewById(R.id.search_edit_text);
-            //restore the edittext state
-            editText.setText(savedInstanceState.getString("searchBoxValue"));
-            //restore the searchview state
-            if(savedInstanceState.getBoolean("actionMenuExpanded",false))
-                searchViewMenuItem.expandActionView();
-            //set the bundle to null to free memory
-            savedInstanceState = null;
-        }
+
     }
 
     public void notifyEventAdapterOfDataSetChange()

@@ -2,18 +2,15 @@ package com.awmdev.purecloudkiosk.Model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.util.LruCache;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 
@@ -33,10 +30,9 @@ public class HttpRequester
 {
     private final String TAG = HttpRequester.class.getSimpleName();
     private static HttpRequester httpRequester;
-    private Request currentSearchRequest;
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;
-
+    private Request currentRequest;
 
     private HttpRequester(Context context)
     {
@@ -88,6 +84,9 @@ public class HttpRequester
         String url = String.format("http://ec2-54-213-9-55.us-west-2.compute.amazonaws.com:8080/events/managing?limit=25&page=%1$s",pageNumber);
         //create the request
         Request request = createJsonArrayRequest(url, authKey, callback, errorCallback);
+        //cancel the current request, if it exists
+        if(currentRequest != null)
+            requestQueue.cancelAll(currentRequest);
         //send the request
         requestQueue.add(request);
     }
@@ -96,13 +95,13 @@ public class HttpRequester
     {
         //construct the url
         String url = String.format("http://ec2-54-213-9-55.us-west-2.compute.amazonaws.com:8080/events/searchEvents?managing=true&limit=25&page=%1$s&query=%2$s",pageNumber,searchRequest);
-        //cancel the current request, if it exists
-        if(currentSearchRequest != null)
-            requestQueue.cancelAll(currentSearchRequest);
         //create the request
-        currentSearchRequest = createJsonArrayRequest(url, authKey, callback, errorCallback);
+        currentRequest = createJsonArrayRequest(url, authKey, callback, errorCallback);
+        //cancel the current request, if it exists
+        if(currentRequest != null)
+            requestQueue.cancelAll(currentRequest);
         //send the new request
-        requestQueue.add(currentSearchRequest);
+        requestQueue.add(currentRequest);
     }
 
     public void sendEventCheckInRequest(final String authKey, RequestFuture<JSONObject> future, JSONObject checkIn)

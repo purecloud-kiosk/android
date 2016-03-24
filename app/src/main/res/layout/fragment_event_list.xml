@@ -5,12 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/feventlist_recycler_view"
-        android:scrollbars="vertical"
-        android:background="@android:color/white"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/feventlist_refresh_view"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/feventlist_recycler_view"
+            android:scrollbars="vertical"
+            android:background="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
     <ImageView
         android:id="@+id/feventlist_imageview"
         android:src="@drawable/no_event_splash"
