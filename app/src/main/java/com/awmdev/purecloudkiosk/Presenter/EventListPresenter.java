@@ -10,7 +10,6 @@ import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.View.Interfaces.EventListViewInterface;
 
-import org.apache.http.HttpRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -126,7 +125,7 @@ public class EventListPresenter
                 eventListViewInterface.setEmptyStateViewVisibility(false);
                 //create a collection to store the parsed json data
                 List<JSONDecorator> jsonDecoratorList = new ArrayList<>();
-                //parse the json response into jsoneventwrapper class
+                //parse the json response into JsonDecorator class
                 for (int i = 0; i < response.length(); ++i)
                 {
                     try

@@ -27,12 +27,15 @@ import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 
 import org.apache.http.HttpStatus;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
@@ -100,11 +103,9 @@ public class CheckInRunnable implements Runnable
         //grab the view from the database
         checkInView = database.getView("check_in_view");
         //create the mapper for the view
-        checkInView.setMap(new Mapper()
-        {
+        checkInView.setMap(new Mapper() {
             @Override
-            public void map(Map<String, Object> document, Emitter emitter)
-            {
+            public void map(Map<String, Object> document, Emitter emitter) {
                 //grab all of our content from the doc
                 Map<String, Object> map = new HashMap();
                 map.put("eventID", document.get("eventID"));
@@ -115,6 +116,8 @@ public class CheckInRunnable implements Runnable
         }, "1.1.2");
         //create the query for the navigating the results
         query = checkInView.createQuery();
+        //set the query size for fifty, since it is the max post size
+        query.setLimit(50);
     }
 
     @Override
@@ -137,10 +140,6 @@ public class CheckInRunnable implements Runnable
         notifyFinishListener();
     }
 
-    /**This method is complete garbage, but I cant think of another way to handle the thread better
-     * and trust me I've been brainstorming for a while now.
-     * @return boolean depending on if the thread should continue to run
-     */
     private synchronized boolean determineState()
     {
         //check to see if the thread should be awake, waiting for state change or dying since it is
@@ -211,18 +210,18 @@ public class CheckInRunnable implements Runnable
         PackageManager pm = context.getPackageManager();
         //grab the receiver
         ComponentName receiver = new ComponentName(context, ConnectivityReceiver.class);
-       if(enable)
-       {
-           //enable the broadcast receiver in the manifest
-           pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+        if(enable)
+        {
+            //enable the broadcast receiver in the manifest
+            pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                    PackageManager.DONT_KILL_APP);
-       }
+        }
         else
-       {
-           //disable the broadcast receiver in the manifest
-           pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+        {
+            //disable the broadcast receiver in the manifest
+            pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                    PackageManager.DONT_KILL_APP);
-       }
+        }
     }
 
     private synchronized int getDataCount()
@@ -288,25 +287,34 @@ public class CheckInRunnable implements Runnable
             {
                 //rerun the query
                 QueryEnumerator newResult = query.run();
+                //create a collection to store the json objects in
+                List<JSONObject> jsonObjectList = new ArrayList<>();
+                //create a map of person id to document id for deletion purpose
+                List<String> deletionList = new ArrayList<>();
                 //iterate through the results
                 for (Iterator<QueryRow> it = newResult; it.hasNext(); )
                 {
-                    //check to see if we should break out early to process new check ins
-                    if(checkInWaiting)
-                        break;
-                    //no need to break early, process the next check in
+                    //grab the result from the database
                     QueryRow row = it.next();
-                    //create the future for the request
-                    RequestFuture<JSONObject> future = RequestFuture.newFuture();
                     //create the map from the document
                     Map<String, Object> document = (Map<String, Object>) row.getValue();
-                    //turn the map into a json object
-                    JSONObject jsonObject = new JSONObject(document);
-                    //send the request
-                    httpRequester.sendEventCheckInRequest(authKey, future, jsonObject);
-                    //get the response from the server
-                    getResponse(future, row);
+                    //insert the jsonObject into the collection
+                    jsonObjectList.add(new JSONObject(document));
+                    //add the document to the deletion list
+                    deletionList.add(row.getDocumentId());
                 }
+                //create the map for the json array
+                Map<String,JSONArray> jsonArrayMap = new HashMap<>();
+                //put the array into the map
+                jsonArrayMap.put("checkIns",new JSONArray(jsonObjectList));
+                //create the json object with the pre-created map
+                JSONObject jsonObject = new JSONObject(jsonArrayMap);
+                //create a future object for the json array
+                RequestFuture<JSONObject> future = RequestFuture.newFuture();
+                //send the request
+                httpRequester.sendEventCheckInRequest(authKey, future,jsonObject);
+                //get the response from the server
+                getResponse(future, deletionList);
             }
         }
         catch(CouchbaseLiteException cble)
@@ -315,7 +323,7 @@ public class CheckInRunnable implements Runnable
         }
     }
 
-    private void getResponse(RequestFuture future,QueryRow row)
+    private void getResponse(RequestFuture future,List<String> deletionList)
     {
         try
         {
@@ -323,8 +331,9 @@ public class CheckInRunnable implements Runnable
             {
                 //wait for the response
                 future.get(30, TimeUnit.SECONDS);
-                //delete the document from the database
-                database.getDocument(row.getSourceDocumentId()).delete();
+                //we received a response, so we can delete the sent documents
+                for(String documentID: deletionList)
+                    database.getDocument(documentID).delete();
             }
             catch (InterruptedException | ExecutionException ex)
             {
@@ -334,30 +343,24 @@ public class CheckInRunnable implements Runnable
                     VolleyError volleyError = (VolleyError) ex.getCause();
                     //grab the network response
                     NetworkResponse networkResponse = volleyError.networkResponse;
-                    //check to see if the response is 400
-                    if (networkResponse != null && networkResponse.statusCode == HttpStatus.SC_BAD_REQUEST)
+                    //check to see if there is a response
+                    if(networkResponse == null)
                     {
-                        //this is considered a bad request due to it already being
-                        //checked in, as such we will delete the check in from the database
-                        database.getDocument(row.getSourceDocumentId()).delete();
+                        //check to make sure we have an internet connection
+                        checkInternetConnectivityState();
                     }
-                    else
-                    {
-                        if(networkResponse == null)
-                        {
-                            //check network connectivity state to make sure we actually have an internet connection
-                            NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-                            //check the connection status
-                            if(activeNetwork == null || (activeNetwork != null && !activeNetwork.isConnected()))
-                                updateConnectivityState(false);
-                        }
-                    }
+                }
+                else
+                {
+                    Log.d(TAG,"Exception when sending event check in to server: " + ex);
                 }
             }
             catch (TimeoutException te)
             {
                 //timeout, most likely due to no internet connection or slow response
                 Log.e(TAG, "Timeout occurred when waiting for response");
+                //check to make sure its not internet connection problem
+                checkInternetConnectivityState();
             }
         }
         catch(CouchbaseLiteException cble)
@@ -366,18 +369,27 @@ public class CheckInRunnable implements Runnable
         }
     }
 
+    private void checkInternetConnectivityState()
+    {
+        //check network connectivity state to make sure we actually have an internet connection
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        //check the connection status
+        if(activeNetwork == null || !activeNetwork.isConnected())
+            updateConnectivityState(false);
+    }
+
     public void addRunnableFinishedListener(CheckInRunnableListener listener)
     {
         checkInRunnableListener = listener;
     }
 
-    public void notifyFinishListener()
+    private void notifyFinishListener()
     {
         if(checkInRunnableListener != null)
             checkInRunnableListener.onRunnableFinished();
     }
 
-    public void notifyStateChange(int stringID)
+    private void notifyStateChange(int stringID)
     {
         if(checkInRunnableListener != null)
             checkInRunnableListener.onStateChange(stringID);

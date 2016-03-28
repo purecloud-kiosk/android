@@ -107,7 +107,7 @@ public class HttpRequester
     public void sendEventCheckInRequest(final String authKey, RequestFuture<JSONObject> future, JSONObject checkIn)
     {
         //create the url
-        String url = "http://ec2-54-213-9-55.us-west-2.compute.amazonaws.com:8080/events/checkIn";
+        String url = "http://ec2-54-213-9-55.us-west-2.compute.amazonaws.com:8080/events/bulkCheckIn";
         //create the post request to handle future
         JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST,url,checkIn,future,future)
         {
