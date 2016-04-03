@@ -170,13 +170,22 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
     @Override
     public void onRefresh()
     {
+        eventListPresenter.onPullToRefresh();
+    }
 
+
+    @Override
+    public void notifySuccessfulEventDataRefresh()
+    {
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     public void notifyEventAdapterOfDataSetChange()
     {
         //pass the request to notify the event adapter of a data set change
         eventAdapter.notifyDataSetChanged();
+        //remove the refreshing icon from the view
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     public void setEmptyStateViewVisibility(boolean visible)
