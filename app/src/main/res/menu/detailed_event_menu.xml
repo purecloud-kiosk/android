@@ -6,8 +6,16 @@
     tools:context=".View.Fragment.DetailedEventFragment">
 
     <item
+        android:id="@+id/menu_save_event"
+        android:title="@string/menu_save_event"
+        android:icon = "@drawable/save_icon"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
         android:id="@+id/menu_start_kiosk"
         android:title="@string/launch_kiosk"
         android:icon = "@drawable/launch_icon"
         app:showAsAction="always"/>
+
 </menu>

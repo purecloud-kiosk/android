@@ -6,6 +6,5 @@ package com.awmdev.purecloudkiosk.View.Interfaces;
 public interface EventListViewInterface
 {
     void notifyEventAdapterOfDataSetChange();
-    void notifySuccessfulEventDataRefresh();
     void setEmptyStateViewVisibility(boolean visible);
 }

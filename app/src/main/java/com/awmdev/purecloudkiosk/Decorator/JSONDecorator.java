@@ -16,7 +16,7 @@ import java.util.Map;
 public class JSONDecorator extends JSONObject implements Parcelable
 {
     //tag for all logging operations
-    private static String tag = JSONDecorator.class.getSimpleName();
+    private static String TAG = JSONDecorator.class.getSimpleName();
 
     public JSONDecorator(JSONObject jsonObject) throws JSONException
     {
@@ -39,6 +39,18 @@ public class JSONDecorator extends JSONObject implements Parcelable
         {
             //improperly formatted json, return null
             return null;
+        }
+    }
+
+    public void putString(String parameter, String value)
+    {
+        try
+        {
+            super.put(parameter,value);
+        }
+        catch (JSONException ex)
+        {
+            Log.d(TAG,"Unable to add string to json decorator, exception follows: "+ ex);
         }
     }
 
@@ -87,7 +99,7 @@ public class JSONDecorator extends JSONObject implements Parcelable
             catch(JSONException ex)
             {
                 //log the exception
-                Log.d(tag, ex.toString());
+                Log.d(TAG, ex.toString());
                 //return a null object
                 return null;
             }

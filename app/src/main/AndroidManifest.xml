@@ -45,6 +45,7 @@
         </activity>
 
         <service android:name=".Services.CheckInService" android:enabled="true"/>
+        <service android:name=".Services.SaveEventIntentService" android:enabled="true"/>
 
         <receiver
             android:name=".Receiver.ConnectivityReceiver"

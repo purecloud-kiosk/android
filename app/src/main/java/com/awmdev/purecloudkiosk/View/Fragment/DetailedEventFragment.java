@@ -1,5 +1,6 @@
 package com.awmdev.purecloudkiosk.View.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Presenter.DetailedEventPresenter;
 import com.awmdev.purecloudkiosk.R;
+import com.awmdev.purecloudkiosk.Services.SaveEventIntentService;
 import com.awmdev.purecloudkiosk.View.Interfaces.DetailedEventViewInterface;
 import com.awmdev.purecloudkiosk.View.Interfaces.LaunchKioskInterface;
 
@@ -82,21 +84,36 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
     {
         // Inflate the menu
         inflater.inflate(R.menu.detailed_event_menu, menu);
-        //grab the launch menu item
-        MenuItem menuItem = menu.findItem(R.id.menu_start_kiosk);
-        //add the item on click listener
-        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item)
-            {
-                ((LaunchKioskInterface)getActivity()).onLaunchKioskSelected(jsonEventParcelable);
-                return true;
-            }
-        });
         //call the super class
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.menu_start_kiosk:
+                ((LaunchKioskInterface)getActivity()).onLaunchKioskSelected(jsonEventParcelable);
+                return true;
+            case R.id.menu_save_event:
+                startSaveEventIntentService();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void startSaveEventIntentService()
+    {
+        if(jsonEventParcelable != null)
+        {
+            Intent intent = new Intent(getActivity().getApplicationContext(),
+                    SaveEventIntentService.class);
+            intent.putExtra("parcelable", jsonEventParcelable);
+            getActivity().startService(intent);
+        }
+    }
 
     public void assignDataToView(Parcelable jsonEventDecorator)
     {

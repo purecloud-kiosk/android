@@ -1,17 +1,28 @@
 package com.awmdev.purecloudkiosk.Presenter;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.View.Interfaces.DetailedEventViewInterface;
+import com.couchbase.lite.CouchbaseLiteException;
+import com.couchbase.lite.Database;
+import com.couchbase.lite.Document;
+import com.couchbase.lite.Manager;
+import com.couchbase.lite.android.AndroidContext;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by Reese on 1/12/2016.
  */
 public class DetailedEventPresenter
 {
+    private String TAG = DetailedEventPresenter.class.getSimpleName();
     private DetailedEventViewInterface detailedEventViewInterface;
 
     public DetailedEventPresenter(DetailedEventViewInterface detailedEventViewInterface)

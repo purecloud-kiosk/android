@@ -174,12 +174,6 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
     }
 
 
-    @Override
-    public void notifySuccessfulEventDataRefresh()
-    {
-        swipeRefreshLayout.setRefreshing(false);
-    }
-
     public void notifyEventAdapterOfDataSetChange()
     {
         //pass the request to notify the event adapter of a data set change

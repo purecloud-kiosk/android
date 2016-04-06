@@ -5,10 +5,13 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
@@ -122,6 +125,12 @@ public class HttpRequester
         requestQueue.add(postRequest);
     }
 
+    public void sendDownloadImageRequest(String url,Response.Listener<byte[]> callback,Response.ErrorListener errorCallback)
+    {
+        InputStreamVolleyRequest inputStreamVolleyRequest = new InputStreamVolleyRequest(Request.Method.GET,url,callback,errorCallback);
+        requestQueue.add(inputStreamVolleyRequest);
+    }
+
     private Request createJsonArrayRequest(final String url, final String authKey, Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback)
         {
         //add the auth token to the header
@@ -141,5 +150,34 @@ public class HttpRequester
     public ImageLoader getImageLoader()
     {
         return imageLoader;
+    }
+
+
+    private class InputStreamVolleyRequest extends Request<byte[]>
+    {
+        private final Response.Listener<byte[]> listener;
+
+        public InputStreamVolleyRequest(int method,String url,Response.Listener<byte[]> listener,
+                                        Response.ErrorListener errorListener)
+        {
+            //call the super
+            super(method, url, errorListener);
+            //enable caching
+            setShouldCache(true);
+            //save the listener
+            this.listener = listener;
+        }
+
+        @Override
+        protected Response<byte[]> parseNetworkResponse(NetworkResponse response)
+        {
+            return Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response));
+        }
+
+        @Override
+        protected void deliverResponse(byte[] response)
+        {
+            listener.onResponse(response);
+        }
     }
 }
