@@ -100,15 +100,12 @@
                 android:theme="@style/EditTextTheme"
                 android:textColor="@android:color/white"
                 android:textSize="22sp"
-                android:layout_toEndOf= "@id/flogin_user_text"
-                android:layout_alignTop="@id/flogin_user_text"
                 android:inputType="textEmailAddress"/>
 
             <TextView
                 android:id="@+id/flogin_password_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/flogin_user_text"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
                 android:textSize="18sp"
@@ -120,8 +117,6 @@
                 android:id="@+id/flogin_password_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf= "@id/flogin_password_text"
-                android:layout_alignTop="@id/flogin_password_text"
                 android:textColor="@android:color/white"
                 android:textSize="22sp"
                 android:theme="@style/EditTextTheme"
@@ -132,7 +127,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_below="@id/flogin_password_edit"
                 android:visibility="gone">
 
                 <TextView
@@ -159,7 +153,6 @@
                 android:id="@+id/flogin_error_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/flogin_organization_wrapper"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
                 android:textSize="12sp"

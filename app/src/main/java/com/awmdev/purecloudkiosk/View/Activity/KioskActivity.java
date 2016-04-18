@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +33,7 @@ import com.awmdev.purecloudkiosk.View.Interfaces.KioskViewInterface;
 public class KioskActivity extends AppCompatActivity implements View.OnClickListener,KioskViewInterface
 {
     private final int requestCode = 100;
-    private NetworkImageView eventImage;
+    private ImageView eventImage;
     private TextView eventNameTextView;
     private Button checkInButton;
 
@@ -52,12 +55,12 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
                 WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON |
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //grab the components from the view
-        eventImage = (NetworkImageView)findViewById(R.id.akiosk_image_view);
+        eventImage = (ImageView)findViewById(R.id.akiosk_image_view);
         eventNameTextView = (TextView)findViewById(R.id.akiosk_event_name);
         checkInButton =(Button)findViewById(R.id.akiosk_button);
         //set the onclick listener for the button
         checkInButton.setOnClickListener(this);
-        //yes im creating a presenter, all just to follow convention
+        //creating the presenter to populate the view
         new KioskPresenter(this).populateView(grabDecoratorFromIntent());
     }
 
@@ -133,12 +136,6 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
         super.onDestroy();
     }
 
-    @Override
-    public void onBackPressed()
-    {
-        super.onBackPressed();
-    }
-
     private void navigateToCameraActivity()
     {
         //navigate to the next activity
@@ -152,9 +149,10 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
        return (JSONDecorator)getIntent().getExtras().getParcelable("parcelable");
     }
 
-    public void setEventImage(ImageLoader imageLoader, String url)
+    @Override
+    public void setEventImage(Bitmap bitmap)
     {
-        eventImage.setImageUrl(url, imageLoader);
+        eventImage.setImageBitmap(bitmap);
     }
 
     public void setEventNameTextView(String eventName)

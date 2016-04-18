@@ -23,12 +23,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-    Known Issues:
-        -Singleton Class should be changed to create and grab instance instead of only grabbing instance and pass a null context.
-        -malformed url throw exceptions, not sure to verify with apache or have them verified server side?
- */
-
 public class HttpRequester
 {
     private final String TAG = HttpRequester.class.getSimpleName();
@@ -84,7 +78,7 @@ public class HttpRequester
     public void sendEventDataRequest(final String authKey, Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback,String pageNumber)
     {
         //URL for the request
-        String url = String.format("http://ec2-54-213-9-55.us-west-2.compute.amazonaws.com:8080/events/managing?limit=25&page=%1$s",pageNumber);
+        String url = String.format("http://www.charlie-duong.xyz:8080/events/managing?limit=25&page=%1$s",pageNumber);
         //create the request
         Request request = createJsonArrayRequest(url, authKey, callback, errorCallback);
         //cancel the current request, if it exists
@@ -97,7 +91,7 @@ public class HttpRequester
     public void sendEventDataSearchRequest(final String authKey,Response.Listener<JSONArray> callback, Response.ErrorListener errorCallback,String pageNumber, String searchRequest)
     {
         //construct the url
-        String url = String.format("http://ec2-54-213-9-55.us-west-2.compute.amazonaws.com:8080/events/searchEvents?managing=true&limit=25&page=%1$s&query=%2$s",pageNumber,searchRequest);
+        String url = String.format("http://www.charlie-duong.xyz:8080/events/searchEvents?managing=true&limit=25&page=%1$s&query=%2$s",pageNumber,searchRequest);
         //create the request
         currentRequest = createJsonArrayRequest(url, authKey, callback, errorCallback);
         //cancel the current request, if it exists
@@ -110,7 +104,7 @@ public class HttpRequester
     public void sendEventCheckInRequest(final String authKey, RequestFuture<JSONObject> future, JSONObject checkIn)
     {
         //create the url
-        String url = "http://ec2-54-213-9-55.us-west-2.compute.amazonaws.com:8080/events/bulkCheckIn";
+        String url = "http://www.charlie-duong.xyz:8080/events/bulkCheckIn";
         //create the post request to handle future
         JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST,url,checkIn,future,future)
         {

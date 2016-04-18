@@ -28,6 +28,11 @@ public class JSONDecorator extends JSONObject implements Parcelable
         super(jsonString);
     }
 
+    public JSONDecorator(Map<String,Object> jsonMap)
+    {
+        super(jsonMap);
+    }
+
     @Override
     public String getString(String parameter)
     {

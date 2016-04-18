@@ -1,5 +1,7 @@
 package com.awmdev.purecloudkiosk.View.Interfaces;
 
+import android.graphics.Bitmap;
+
 import com.android.volley.toolbox.ImageLoader;
 
 /**
@@ -7,6 +9,6 @@ import com.android.volley.toolbox.ImageLoader;
  */
 public interface KioskViewInterface
 {
-    void setEventImage(ImageLoader imageLoader, String url);
+    void setEventImage(Bitmap bitmap);
     void setEventNameTextView(String eventName);
 }

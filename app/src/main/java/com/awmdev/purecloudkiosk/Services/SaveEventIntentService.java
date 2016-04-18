@@ -12,13 +12,20 @@ import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
+import com.couchbase.lite.Emitter;
 import com.couchbase.lite.Manager;
+import com.couchbase.lite.Mapper;
+import com.couchbase.lite.Query;
+import com.couchbase.lite.QueryEnumerator;
+import com.couchbase.lite.QueryRow;
+import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -52,22 +59,72 @@ public class SaveEventIntentService extends IntentService
     {
         //grab the json decorator from the intent
         JSONDecorator jsonDecorator = intent.getExtras().getParcelable("parcelable");
-        //create the default directory if it doesn't exist
-        String rootPath = createDirectory(jsonDecorator.getString("id"));
-        //grab the url from the decorator for the thumb
-        String thumbURL = jsonDecorator.getString("thumbnailUrl");
-        //attempt to download the thumb nail
-        String thumbPath = saveImage(rootPath + "/thumbnail.img", thumbURL);
-        //save the thumb file path to the jsonDecorator
-        jsonDecorator.putString("thumbPath",thumbPath);
-        //grab the url for banner image
-        String bannerURL =  jsonDecorator.getString("imageUrl");
-        //grab the path for the banner
-        String bannerPath = saveImage(rootPath+"/banner.img",bannerURL);
-        //save the banner image location to the decorator
-        jsonDecorator.putString("bannerPath", bannerPath);
-        //save the newly created event to the couch base db
-        saveDecoratorToDatabase(jsonDecorator);
+        //check to see if the event already exists in the database
+        if(!checkForExistingEntry(jsonDecorator.getString("id")))
+        {
+            //create the default directory if it doesn't exist
+            String rootPath = createDirectory(jsonDecorator.getString("id"));
+            //save the root path to the json
+            jsonDecorator.putString("rootPath",rootPath);
+            //grab the url from the decorator for the thumb
+            String thumbURL = jsonDecorator.getString("thumbnailUrl");
+            //attempt to download the thumb nail
+            String thumbPath = saveImage(rootPath + "/thumbnail.img", thumbURL);
+            //save the thumb file path to the jsonDecorator
+            jsonDecorator.putString("thumbPath",thumbPath);
+            //grab the url for banner image
+            String bannerURL =  jsonDecorator.getString("imageUrl");
+            //grab the path for the banner
+            String bannerPath = saveImage(rootPath+"/banner.img",bannerURL);
+            //save the banner image location to the decorator
+            jsonDecorator.putString("bannerPath", bannerPath);
+            //save the newly created event to the couch base db
+            saveDecoratorToDatabase(jsonDecorator);
+        }
+    }
+
+    private boolean checkForExistingEntry(String id)
+    {
+        try
+        {
+            //create an instance of the manager
+            Manager manager = new Manager(new AndroidContext(this), Manager.DEFAULT_OPTIONS);
+            //grab the database from the manager
+            Database database = manager.getDatabase("saved_events_database");
+            //grab the associated view from the database
+            View savedEventsView = database.getView("saved_events_view");
+            //assign a mapper to the view
+            savedEventsView.setMap(new Mapper() {
+                @Override
+                public void map(Map<String, Object> document, Emitter emitter) {
+                    emitter.emit("saved_event", document);
+                }
+            }, "1.0");
+            //produce the query that will used to grab the data
+            Query query = savedEventsView.createQuery();
+            //run the query to produce the results
+            QueryEnumerator queryEnumerator = query.run();
+            //iterate through the results from the query
+            for (Iterator<QueryRow> it = queryEnumerator; it.hasNext(); )
+            {
+                //grab the query row from the iterator
+                QueryRow queryRow = it.next();
+                //grab the result from the database
+                Map<String,Object> eventMap = (Map<String,Object>)queryRow.getValue();
+                //check to see if the event id match if so, don't save the event
+                if(((String)eventMap.get("id")).matches(id))
+                    return true;
+            }
+            return false;
+        }
+        catch(IOException | CouchbaseLiteException ex)
+        {
+            //Log the exception
+            Log.d(TAG,"Exception trying to check for existing entry, exception follows: "+ ex);
+            //return true that the event exists since there was an exception trying to check the database
+            return true;
+        }
+
     }
 
     private String createDirectory(String eventID)
@@ -131,7 +188,7 @@ public class SaveEventIntentService extends IntentService
         {
             //log the error
             Log.d(TAG, "Unable to download image from specified url: " + imageURL + " ,error follows: "+ex);
-            //return an empty byte array was not able to be downloaded.
+            //return an empty byte array was not able to be downloaded, just so we dont fail to write to file
             return new byte[0];
         }
     }
@@ -143,7 +200,7 @@ public class SaveEventIntentService extends IntentService
             //create an instance of the manager
             Manager manager = new Manager(new AndroidContext(this), Manager.DEFAULT_OPTIONS);
             //grab the database from the manager
-            Database database = manager.getDatabase("savedeventsdatabase");
+            Database database = manager.getDatabase("saved_events_database");
             //create a document to store our event into
             Document document = database.createDocument();
             //grab the map from the json decorator
@@ -152,7 +209,6 @@ public class SaveEventIntentService extends IntentService
             map.remove("__v");
             //store the map into the document
             document.putProperties(map);
-
         }
         catch(IOException | CouchbaseLiteException ex)
         {

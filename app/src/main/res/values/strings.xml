@@ -26,4 +26,8 @@
     <string name="notification_waiting_data">Waiting For Check Ins</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_save_event">Save Event</string>
+    <string name="snackbar_saving">Saving</string>
+    <string name="snackbar_deleted">Deleted</string>
+    <string name="saved_event_menu_item">View Saved Events</string>
+    <string name="menu_item_search">Search</string>
 </resources>

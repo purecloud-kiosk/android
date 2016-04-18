@@ -3,6 +3,7 @@ package com.awmdev.purecloudkiosk.View.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,15 +30,17 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
     //variables to store all of the views in the fragment
     private DetailedEventPresenter detailedEventPresenter;
     private Parcelable jsonEventParcelable;
+    private RelativeLayout relativeLayout;
     private NetworkImageView eventImage;
     private TextView eventDescription;
     private ImageView splashImageView;
+    private TextView eventStartDate;
     private TextView eventLocation;
+    private TextView eventEndDate;
     private ScrollView scrollView;
     private TextView eventPrivacy;
     private TextView eventName;
-    private TextView eventStartDate;
-    private TextView eventEndDate;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -54,7 +57,7 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         //inflate the view
-        RelativeLayout relativeLayout = (RelativeLayout)inflater.inflate(R.layout.fragment_detailed_event,container,false);
+        relativeLayout = (RelativeLayout)inflater.inflate(R.layout.fragment_detailed_event,container,false);
         //grab the components from the view,starting with event name
         eventName = (TextView)relativeLayout.findViewById(R.id.fdevent_event_name);
         //grab the privacy textview
@@ -108,6 +111,13 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
     {
         if(jsonEventParcelable != null)
         {
+            //create the string that is being display
+            String snackbarString = getResources().getString(R.string.snackbar_saving)
+                    + " " + ((JSONDecorator)jsonEventParcelable).getString("title");
+            //create the snackbar to display to the user that the event is being saved
+            Snackbar snackbar = Snackbar.make(relativeLayout,snackbarString,Snackbar.LENGTH_SHORT);
+            snackbar.show();
+            //create the intent to start the service
             Intent intent = new Intent(getActivity().getApplicationContext(),
                     SaveEventIntentService.class);
             intent.putExtra("parcelable", jsonEventParcelable);

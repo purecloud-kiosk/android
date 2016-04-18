@@ -6,9 +6,16 @@
     tools:context=".View.Fragment.EventListFragment">
 
     <item
+        android:id="@+id/menu_saved_event_list"
+        android:title="@string/saved_event_menu_item"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/menu_action_search"
-        android:title="Search"
+        android:title="@string/menu_item_search"
         android:icon="@drawable/search_icon"
         app:actionLayout="@layout/search_layout"
         app:showAsAction="always|collapseActionView" />
+
+
 </menu>

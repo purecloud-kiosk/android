@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
-import com.awmdev.purecloudkiosk.Presenter.BarcodePresenter;
 import com.awmdev.purecloudkiosk.R;
 
 /**

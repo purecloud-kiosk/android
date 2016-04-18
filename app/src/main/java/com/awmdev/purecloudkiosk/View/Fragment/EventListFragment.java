@@ -1,6 +1,7 @@
 package com.awmdev.purecloudkiosk.View.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.Presenter.EventListPresenter;
 import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Activity.EventListActivity;
+import com.awmdev.purecloudkiosk.View.Activity.SavedEventActivity;
 import com.awmdev.purecloudkiosk.View.Interfaces.EventListViewInterface;
 
 public class EventListFragment extends Fragment implements EventListViewInterface, SwipeRefreshLayout.OnRefreshListener
@@ -108,10 +110,14 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         super.onSaveInstanceState(outState);
         //write the model to the bundle
         outState.putParcelable("parcelable", eventListModel);
-        //grab the search view from the menu
-        MenuItem searchViewMenuItem = fragmentMenu.findItem(R.id.menu_action_search);
-        //write the current state of the menu
-        outState.putBoolean("actionMenuExpanded", searchViewMenuItem.isActionViewExpanded());
+        //check to see if the menu is null, on save could be called before prepare options menu.
+        if(fragmentMenu != null)
+        {
+            //grab the search view from the menu
+            MenuItem searchViewMenuItem = fragmentMenu.findItem(R.id.menu_action_search);
+            //write the current state of the menu
+            outState.putBoolean("actionMenuExpanded", searchViewMenuItem.isActionViewExpanded());
+        }
         //save the state of the splash icon
         outState.putBoolean("splashState", emptyStateImageView.getVisibility() == View.VISIBLE);
     }
@@ -123,7 +129,7 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         super.onViewStateRestored(savedInstanceState);
         //check to see if the bundle is null, it should never be null
         if(savedInstanceState != null)
-            setEmptyStateViewVisibility(savedInstanceState.getBoolean("splashState"));
+            setEmptyStateViewVisibility(savedInstanceState.getBoolean("splashState",false));
     }
 
     @Override
@@ -156,6 +162,18 @@ public class EventListFragment extends Fragment implements EventListViewInterfac
         savedInstanceState = null;
         //call the super class
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if(item.getItemId() == R.id.menu_saved_event_list)
+        {
+            Intent intent = new Intent(getContext(), SavedEventActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
