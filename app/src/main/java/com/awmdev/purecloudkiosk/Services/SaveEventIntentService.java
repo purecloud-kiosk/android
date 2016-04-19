@@ -1,6 +1,8 @@
 package com.awmdev.purecloudkiosk.Services;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
@@ -9,6 +11,7 @@ import android.util.Log;
 import com.android.volley.toolbox.RequestFuture;
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
+import com.awmdev.purecloudkiosk.R;
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
@@ -20,6 +23,7 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
+import com.couchbase.lite.support.FileDirUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,23 +68,51 @@ public class SaveEventIntentService extends IntentService
         {
             //create the default directory if it doesn't exist
             String rootPath = createDirectory(jsonDecorator.getString("id"));
-            //save the root path to the json
-            jsonDecorator.putString("rootPath",rootPath);
-            //grab the url from the decorator for the thumb
-            String thumbURL = jsonDecorator.getString("thumbnailUrl");
-            //attempt to download the thumb nail
-            String thumbPath = saveImage(rootPath + "/thumbnail.img", thumbURL);
-            //save the thumb file path to the jsonDecorator
-            jsonDecorator.putString("thumbPath",thumbPath);
-            //grab the url for banner image
-            String bannerURL =  jsonDecorator.getString("imageUrl");
-            //grab the path for the banner
-            String bannerPath = saveImage(rootPath+"/banner.img",bannerURL);
-            //save the banner image location to the decorator
-            jsonDecorator.putString("bannerPath", bannerPath);
-            //save the newly created event to the couch base db
-            saveDecoratorToDatabase(jsonDecorator);
+            try
+            {
+                //save the root path to the json
+                jsonDecorator.putString("rootPath",rootPath);
+                //download and save the thumbnail for the event
+                downloadThumbnail(jsonDecorator,rootPath);
+                //download and save the banner for the event
+                downloadBanner(jsonDecorator,rootPath);
+                //save the newly created event to the couch base db
+                saveDecoratorToDatabase(jsonDecorator);
+                //build the string for the notification
+                String notificationString = jsonDecorator.getString("title")
+                        + " " + getResources().getString(R.string.notification_saving_success);
+                //build and notify the user with a notification
+                buildAndDisplayNotification(notificationString);
+            }
+            catch(EventSavingException ex)
+            {
+                //there was an exception in the saving process, remove all data saved to this point
+                FileDirUtils.deleteRecursive(new File(rootPath));
+                //build the string for the notification
+                String notificationString = jsonDecorator.getString("title")
+                        + " " + getResources().getString(R.string.notification_saving_failed);
+                //data removed, now notify the user of the problem
+                buildAndDisplayNotification(notificationString);
+            }
         }
+    }
+
+    private void buildAndDisplayNotification(String notificationContentInfo)
+    {
+        //Start by creating a builder
+        Notification.Builder notificationBuilder = new Notification.Builder(this);
+        //set the icon, title, the info for the notification
+        notificationBuilder.setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle(getResources().getString(R.string.app_name))
+                .setContentInfo(notificationContentInfo);
+        //if sdk is lollipop or lower set a notification color
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+            notificationBuilder.setColor(getResources().getColor(R.color.notificationColor));
+        //grab the notification manager
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        //display the notification
+        notificationManager.notify(100,notificationBuilder.build());
     }
 
     private boolean checkForExistingEntry(String id)
@@ -145,7 +177,27 @@ public class SaveEventIntentService extends IntentService
         return eventStorage.getAbsolutePath();
     }
 
-    private String saveImage(String path, String url)
+    private void downloadThumbnail(JSONDecorator jsonDecorator, String rootPath) throws EventSavingException
+    {
+        //grab the url from the decorator for the thumb
+        String thumbURL = jsonDecorator.getString("thumbnailUrl");
+        //attempt to download the thumb nail
+        String thumbPath = saveImage(rootPath + "/thumbnail.img", thumbURL);
+        //save the thumb file path to the jsonDecorator
+        jsonDecorator.putString("thumbPath",thumbPath);
+    }
+
+    private void downloadBanner(JSONDecorator jsonDecorator, String rootPath) throws EventSavingException
+    {
+        //grab the url for banner image
+        String bannerURL = jsonDecorator.getString("imageUrl");
+        //grab the path for the banner
+        String bannerPath = saveImage(rootPath+"/banner.img",bannerURL);
+        //save the banner image location to the decorator
+        jsonDecorator.putString("bannerPath", bannerPath);
+    }
+
+    private String saveImage(String path, String url) throws EventSavingException
     {
         try
         {
@@ -168,12 +220,18 @@ public class SaveEventIntentService extends IntentService
         {
             //log the exception
             Log.d(TAG,"Unable to export image file, exception follows: "+ ex);
-            //return null to show the file was not successful saved
-            return null;
+            //return a new event saving failure exception
+            throw new EventSavingException();
         }
+        catch(EventSavingException ex)
+        {
+            //continue throwing the exception up the stack
+            throw ex;
+        }
+
     }
 
-    private byte[] downloadImage(String imageURL)
+    private byte[] downloadImage(String imageURL) throws EventSavingException
     {
         try
         {
@@ -186,14 +244,14 @@ public class SaveEventIntentService extends IntentService
         }
         catch(TimeoutException | InterruptedException | ExecutionException ex)
         {
-            //log the error
+            //log the exception
             Log.d(TAG, "Unable to download image from specified url: " + imageURL + " ,error follows: "+ex);
-            //return an empty byte array was not able to be downloaded, just so we dont fail to write to file
-            return new byte[0];
+            //throw the exception up the stack to stop the saving process
+            throw new EventSavingException();
         }
     }
 
-    private void saveDecoratorToDatabase(JSONDecorator jsonDecorator)
+    private void saveDecoratorToDatabase(JSONDecorator jsonDecorator) throws EventSavingException
     {
         try
         {
@@ -212,7 +270,10 @@ public class SaveEventIntentService extends IntentService
         }
         catch(IOException | CouchbaseLiteException ex)
         {
+            //log the exception
             Log.d(TAG,"Unable to save decorator to database, exception follows: "+ ex);
+            //throw the exception up the stack to stop the saving process
+            throw new EventSavingException();
         }
     }
 }

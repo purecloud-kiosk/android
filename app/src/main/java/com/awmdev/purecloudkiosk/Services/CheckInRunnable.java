@@ -130,7 +130,6 @@ public class CheckInRunnable implements Runnable
         //check to see if we should continue running
         while(determineState())
         {
-            Log.i(TAG,"IM DOING SHIT");
             //consume the check in from the queue and add them to the database
             processCheckIn();
             //send the check in to the server
