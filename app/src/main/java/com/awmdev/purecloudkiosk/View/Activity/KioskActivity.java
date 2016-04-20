@@ -155,9 +155,16 @@ public class KioskActivity extends AppCompatActivity implements View.OnClickList
         eventImage.setImageBitmap(bitmap);
     }
 
+    @Override
     public void setEventNameTextView(String eventName)
     {
         eventNameTextView.setText(eventName);
+    }
+
+    @Override
+    public void setEventImageByResId(int resId)
+    {
+        eventImage.setImageBitmap(BitmapFactory.decodeResource(getResources(),resId));
     }
 
     private void showRationalDialog(String message, DialogInterface.OnClickListener buttonListener)

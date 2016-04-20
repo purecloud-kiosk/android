@@ -99,11 +99,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             {
                 //grab image from url
                 eventImageView.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());
+                //set the error image
+                eventImageView.setErrorImageResId(R.drawable.no_image_available);
             }
             else
             {
-                //place default image instead, this is not the final image nor will it be an http request
-               eventImageView.setImageUrl("https://www.google.com/logos/doodles/2015/new-years-eve-2015-5985438795825152-hp.gif",HttpRequester.getInstance(null).getImageLoader());
+                //place default image instead
+                eventImageView.setDefaultImageResId(R.drawable.no_image_available);
             }
 
         }

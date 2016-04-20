@@ -1,6 +1,8 @@
 package com.awmdev.purecloudkiosk.View.Fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
@@ -31,7 +33,7 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
     private DetailedEventPresenter detailedEventPresenter;
     private Parcelable jsonEventParcelable;
     private RelativeLayout relativeLayout;
-    private NetworkImageView eventImage;
+    private ImageView eventImage;
     private TextView eventDescription;
     private ImageView splashImageView;
     private TextView eventStartDate;
@@ -71,7 +73,7 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
         //grab the description of the event
         eventDescription = (TextView)relativeLayout.findViewById(R.id.fdevent_description);
         //grab the network image view banner
-        eventImage = (NetworkImageView)relativeLayout.findViewById(R.id.fdevent_imageview);
+        eventImage = (ImageView)relativeLayout.findViewById(R.id.fdevent_imageview);
         //grab the splash view
         splashImageView = (ImageView)relativeLayout.findViewById(R.id.fdevent_splash_view);
         //grab the main layout for event information
@@ -186,8 +188,15 @@ public class DetailedEventFragment extends Fragment implements DetailedEventView
         textView.setText(textSelection);
     }
 
-    public void setImageUrl(String url,ImageLoader imageLoader)
+    @Override
+    public void setImageBitmap(Bitmap bitmap)
     {
-        eventImage.setImageUrl(url,imageLoader);
+        eventImage.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void setImageByResId(int resId)
+    {
+        eventImage.setImageBitmap(BitmapFactory.decodeResource(getResources(),resId));
     }
 }

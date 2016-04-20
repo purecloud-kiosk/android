@@ -10,5 +10,6 @@ import com.android.volley.toolbox.ImageLoader;
 public interface KioskViewInterface
 {
     void setEventImage(Bitmap bitmap);
+    void setEventImageByResId(int resId);
     void setEventNameTextView(String eventName);
 }

@@ -3,8 +3,11 @@ package com.awmdev.purecloudkiosk.Presenter;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
+import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Interfaces.DetailedEventViewInterface;
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
@@ -52,19 +55,31 @@ public class DetailedEventPresenter
         Date endDate = new Date(epochEnd);
         //set the date using simple date format
         detailedEventViewInterface.assignTextView(detailedEventViewInterface.END_DATE,new SimpleDateFormat("hh:mm a 'on' MM-dd-yyyy").format(endDate));
-        //set the image view
         //string to store image url
         String imageURL;
         //check to see if event has image associated
         if(!(imageURL = jsonDecorator.getString("imageUrl")).equalsIgnoreCase("null"))
         {
-            //grab image from url
-            detailedEventViewInterface.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());
+            //grab an instance of the http requester
+            HttpRequester httpRequester = HttpRequester.getInstance(null);
+            //send the image request and set the response
+            httpRequester.getImageLoader().get(jsonDecorator.getString("imageUrl"), new ImageLoader.ImageListener() {
+                @Override
+                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                    detailedEventViewInterface.setImageBitmap(response.getBitmap());
+                }
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    detailedEventViewInterface.setImageByResId(R.drawable.no_image_available);
+                }
+            });
+
         }
         else
         {
-            //place default image instead, this is not the final image nor will it be an http request
-            detailedEventViewInterface.setImageUrl("https://www.google.com/logos/doodles/2015/new-years-eve-2015-5985438795825152-hp.gif", HttpRequester.getInstance(null).getImageLoader());
+            //set the default image
+            detailedEventViewInterface.setImageByResId(R.drawable.no_image_available);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.awmdev.purecloudkiosk.View.Interfaces;
 
+import android.graphics.Bitmap;
 import android.os.Parcelable;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -19,5 +20,6 @@ public interface DetailedEventViewInterface
     //methods
     void assignDataToView(Parcelable jsonEventDecorator);
     void assignTextView(int selection, String textSelection);
-    void setImageUrl(String url,ImageLoader imageLoader);
+    void setImageBitmap(Bitmap bitmap);
+    void setImageByResId(int resId);
 }

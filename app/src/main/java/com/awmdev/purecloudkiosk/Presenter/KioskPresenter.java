@@ -6,6 +6,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
+import com.awmdev.purecloudkiosk.R;
 import com.awmdev.purecloudkiosk.View.Interfaces.KioskViewInterface;
 
 /**
@@ -44,13 +45,13 @@ public class KioskPresenter
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        //create an default image
+                        kioskViewInterface.setEventImageByResId(R.drawable.no_image_available);
                     }
                 });
             }
             catch(NullPointerException ex)
             {
-                //there was no url specified, as such set the default image
+                kioskViewInterface.setEventImageByResId(R.drawable.no_image_available);
             }
         }
     }
