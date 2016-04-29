@@ -177,7 +177,7 @@ public class BarcodeActivity extends AppCompatActivity implements View.OnClickLi
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         LoginDialogFragment loginDialogFragment = new LoginDialogFragment();
-        loginDialogFragment.setBarcodePresenter(barcodePresenter);
+        loginDialogFragment.setBarcodePresenter(barcodePresenter,this);
         loginDialogFragment.show(fragmentManager, "LoginDialog");
 
     }

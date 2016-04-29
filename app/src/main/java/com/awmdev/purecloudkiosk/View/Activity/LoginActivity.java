@@ -22,12 +22,13 @@ public class LoginActivity extends AppCompatActivity
         HttpRequester.getInstance(getApplicationContext());
     }
 
-    public void onLoginSuccessful(String authenticationKey)
+    public void onLoginSuccessful(String authenticationKey, String organization)
     {
         //save the token
         SharedPreferences sharedPreferences = getSharedPreferences("authenticationPreference",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("authenticationToken",authenticationKey);
+        editor.putString("organizationValue",organization);
         editor.putLong("authenticationTimeStamp",System.currentTimeMillis());
         editor.putBoolean("authenticationTokenSaved",true);
         editor.apply();

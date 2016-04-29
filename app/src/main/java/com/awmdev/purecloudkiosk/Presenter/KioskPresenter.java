@@ -45,13 +45,13 @@ public class KioskPresenter
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        kioskViewInterface.setEventImageByResId(R.drawable.no_image_available);
+                        kioskViewInterface.setEventImageByResId(R.drawable.no_image_available_wide);
                     }
                 });
             }
             catch(NullPointerException ex)
             {
-                kioskViewInterface.setEventImageByResId(R.drawable.no_image_available);
+                kioskViewInterface.setEventImageByResId(R.drawable.no_image_available_wide);
             }
         }
     }

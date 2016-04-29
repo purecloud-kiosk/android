@@ -8,8 +8,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
-        <item name="android:textAppearanceLargePopupMenu">@style/OverflowMenuLargeTextColor</item>
-        <item name="android:textAppearanceSmallPopupMenu">@style/OverflowMenuSmallTextColor</item>
+        <item name="textAppearanceLargePopupMenu">@style/OverflowMenuLargeTextColor</item>
+        <item name="textAppearanceSmallPopupMenu">@style/OverflowMenuSmallTextColor</item>
     </style>
 
     <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">

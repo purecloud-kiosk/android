@@ -10,10 +10,13 @@ import com.android.volley.VolleyError;
 import com.awmdev.purecloudkiosk.Decorator.JSONDecorator;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
 import com.awmdev.purecloudkiosk.R;
+import com.couchbase.lite.Status;
 
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by Reese on 2/4/2016.
@@ -52,9 +55,9 @@ public class LoginVerifier
         }
     }
 
-    private void onVerificationSuccessful(String username, String password, String organization)
+    private void onVerificationSuccessful(String username, String password, final String organization)
     {
-        //Create an instance of the httprequester
+        //Create an instance of the http requester
         HttpRequester httpRequester = HttpRequester.getInstance(null);
         //Create a callback for the json response
         Response.Listener<JSONObject>  callback = new Response.Listener<JSONObject>() {
@@ -63,7 +66,7 @@ public class LoginVerifier
             {
                 try
                 {
-                    listener.onLoginSuccessful(new JSONDecorator(response.getJSONObject("res")));
+                    listener.onLoginSuccessful(new JSONDecorator(response.getJSONObject("res")),organization);
                 }
                 catch(JSONException je)
                 {
@@ -79,7 +82,7 @@ public class LoginVerifier
             public void onErrorResponse(VolleyError error)
             {
                 NetworkResponse networkResponse = error.networkResponse;
-                //we have to do this because purecloud doesn't format their 401 correctly
+                //we have to do this because pure cloud doesn't format their 401 correctly
                 if((networkResponse != null && networkResponse.statusCode == HttpStatus.SC_UNAUTHORIZED )
                         || (error.getMessage()!= null && error.getMessage().equalsIgnoreCase("java.io.IOException: No authentication challenges found")))
                 {
@@ -87,15 +90,22 @@ public class LoginVerifier
                 }
                 else
                 {
-                    if(networkResponse != null && networkResponse.statusCode == HttpStatus.SC_MULTIPLE_CHOICES)
+                    if(networkResponse!=null && networkResponse.statusCode == HttpStatus.SC_NOT_FOUND)
                     {
-                        //change the visibility of the org view
-                        listener.setOrganizationWrapperVisibility(View.VISIBLE);
-                        //set the error
-                        listener.setError(R.string.login_error_missing_organization);
+                        listener.setError(R.string.login_error_invalid);
                     }
                     else
-                        listener.setError(R.string.login_error_server_timeout);
+                    {
+                        if(networkResponse != null && networkResponse.statusCode == HttpStatus.SC_MULTIPLE_CHOICES)
+                        {
+                            //change the visibility of the org view
+                            listener.setOrganizationWrapperVisibility(View.VISIBLE);
+                            //set the error
+                            listener.setError(R.string.login_error_missing_organization);
+                        }
+                        else
+                            listener.setError(R.string.login_error_server_timeout);
+                    }
                 }
             }
         };

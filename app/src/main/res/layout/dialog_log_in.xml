@@ -40,15 +40,6 @@
                         android:text="@string/login_password"
                         android:fontFamily="sans-serif"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp"
-                        android:textSize="@dimen/dialog_text_size"
-                        android:textColor="@color/colorPrimary"
-                        android:text="@string/organization"
-                        android:fontFamily="sans-serif"/>
-
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -72,16 +63,6 @@
                         android:textSize="@dimen/dialog_text_size"
                         android:textColor="@color/colorPrimary"
                         android:inputType="textPassword"/>
-
-                    <EditText
-                        android:id="@+id/dlogin_organization_edit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="@dimen/dialog_text_size"
-                        android:theme="@style/EditThemeDialogLogin"
-                        android:inputType="text"/>
-
                 </LinearLayout>
 
             </LinearLayout>

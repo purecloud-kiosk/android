@@ -9,6 +9,6 @@ public interface OnLoginFinishedListener
 {
     void setError(int resID);
     void removeError();
-    void onLoginSuccessful(JSONDecorator jsonDecorator);
+    void onLoginSuccessful(JSONDecorator jsonDecorator, String organization);
     void setOrganizationWrapperVisibility(int visibility);
 }

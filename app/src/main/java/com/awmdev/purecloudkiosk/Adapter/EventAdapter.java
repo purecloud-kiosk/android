@@ -1,13 +1,17 @@
 package com.awmdev.purecloudkiosk.Adapter;
 
 
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.awmdev.purecloudkiosk.Model.EventListModel;
 import com.awmdev.purecloudkiosk.Model.HttpRequester;
@@ -59,7 +63,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         private TextView eventTitleTextView;
         private TextView eventDescriptionTextView;
         private TextView eventDateTextView;
-        private NetworkImageView eventImageView;
+        private ImageView eventImageView;
         private JSONDecorator jsonDecorator;
 
         public ViewHolder(LinearLayout layout)
@@ -76,7 +80,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             eventTitleTextView = (TextView)layout.findViewById(R.id.rli_event_title);
             eventDescriptionTextView = (TextView)layout.findViewById(R.id.rli_event_description);
             eventDateTextView = (TextView)layout.findViewById(R.id.rli_event_time);
-            eventImageView = (NetworkImageView)layout.findViewById(R.id.rli_event_image);
+            eventImageView = (ImageView)layout.findViewById(R.id.rli_event_image);
         }
 
         public void assignEventData(JSONDecorator jsonDecorator)
@@ -97,15 +101,29 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             //check to see if event has image associated
             if(!(imageURL = jsonDecorator.getString("thumbnailUrl")).equalsIgnoreCase("null"))
             {
-                //grab image from url
-                eventImageView.setImageUrl(imageURL,HttpRequester.getInstance(null).getImageLoader());
-                //set the error image
-                eventImageView.setErrorImageResId(R.drawable.no_image_available);
+
+                HttpRequester.getInstance(null).getImageLoader().get(imageURL, new ImageLoader.ImageListener()
+                {
+                    @Override
+                    public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate)
+                    {
+                        //set the bitmap for the image
+                        eventImageView.setImageBitmap(response.getBitmap());
+                    }
+
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        //place the no image available since we failed to load the image
+                        eventImageView.setImageBitmap(BitmapFactory
+                                .decodeResource(eventImageView.getResources(),R.drawable.no_image_available));
+                    }
+                });
             }
             else
             {
                 //place default image instead
-                eventImageView.setDefaultImageResId(R.drawable.no_image_available);
+                eventImageView.setImageBitmap(BitmapFactory.decodeResource(eventImageView.getResources(),R.drawable.no_image_available));
             }
 
         }

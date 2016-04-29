@@ -73,9 +73,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener,Logi
     }
 
     @Override
-    public void navigateToEventList(String authenticationToken)
+    public void navigateToEventList(String authenticationToken, String organization)
     {
-        ((LoginActivity)getActivity()).onLoginSuccessful(authenticationToken);
+        ((LoginActivity)getActivity()).onLoginSuccessful(authenticationToken,organization);
     }
 
     @Override

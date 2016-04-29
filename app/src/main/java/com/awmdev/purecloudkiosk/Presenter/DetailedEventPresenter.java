@@ -20,9 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-/**
- * Created by Reese on 1/12/2016.
- */
 public class DetailedEventPresenter
 {
     private String TAG = DetailedEventPresenter.class.getSimpleName();
@@ -71,7 +68,7 @@ public class DetailedEventPresenter
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    detailedEventViewInterface.setImageByResId(R.drawable.no_image_available);
+                    detailedEventViewInterface.setImageByResId(R.drawable.no_image_available_wide);
                 }
             });
 
@@ -79,7 +76,7 @@ public class DetailedEventPresenter
         else
         {
             //set the default image
-            detailedEventViewInterface.setImageByResId(R.drawable.no_image_available);
+            detailedEventViewInterface.setImageByResId(R.drawable.no_image_available_wide);
         }
     }
 }

@@ -8,5 +8,5 @@ public interface LoginViewInterface
     void setOrganizationWrapperVisibility(int visibility);
     void removeError();
     void setError(int resourceID);
-    void navigateToEventList(String authenicationToken);
+    void navigateToEventList(String authenticationToken, String organization);
 }
