@@ -63,7 +63,6 @@ public class LoginPresenter implements OnLoginFinishedListener
         }
         //navigate to the event list
         loginViewInterface.navigateToEventList(jsonDecorator.getString("X-OrgBook-Auth-Key"),organization);
-
     }
 
     @Override

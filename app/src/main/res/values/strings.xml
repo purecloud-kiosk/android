@@ -10,7 +10,6 @@
     <string name="login_error_missing_fields">You Must Specify A Username And Password Before Logging In</string>
     <string name="login_error_missing_organization">You Must Specify A Organization</string>
     <string name="login_error_server_timeout">Unable To Login Into PureCloud Servers, Try Again Later</string>
-    <string name="login_error_organization_incorrect">You Do Not Belong To This Organization</string>
     <string name="start_date">Start Date</string>
     <string name="end_date">End Date</string>
     <string name="location">Location</string>
